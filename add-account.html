@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ATOM INDUSTRY - เพิ่มบัญชี</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* --- จัด layout ให้ฟอร์มอยู่กึ่งกลาง --- */
+      .form-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        min-height: 90vh; /* กำหนดความสูงเพื่อให้จัดกลางแนวตั้งได้ */
+      }
+      /* --- โค้ด CSS ที่ปรับปรุง --- */
+      .center-form-container {
+        max-width: 550px; /* << เพิ่มความกว้างสูงสุดของกล่อง */
+        width: 100%;
+        margin: 2rem auto;
+        padding: 2.5rem; /* << เพิ่มระยะห่างภายใน */
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+      }
+      .page-title {
+        font-size: 2em; /* << เพิ่มขนาดหัวข้อหลัก */
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .add-account-box > p {
+        text-align: center;
+        color: #666;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        font-size: 1em; /* << เพิ่มขนาดตัวอักษรคำอธิบาย */
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1.2rem;
+      }
+      label {
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+        font-size: 0.9em;
+      }
+      input[type="text"],
+      input[type="email"] {
+        width: 100%;
+        padding: 12px; /* << เพิ่มขนาดช่องกรอกข้อมูล */
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1em; /* << เพิ่มขนาดตัวอักษรในช่องกรอก */
+        background-color: #fff;
+        box-sizing: border-box;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+      input[type="text"]:focus,
+      input[type="email"]:focus {
+        outline: none;
+        border-color: #315ba7;
+        box-shadow: 0 0 0 3px rgba(49, 91, 167, 0.15);
+      }
+      .verify-btn {
+        width: 100%;
+        padding: 14px; /* << เพิ่มขนาดปุ่ม */
+        font-size: 1.1em; /* << เพิ่มขนาดตัวอักษรบนปุ่ม */
+        font-weight: 700;
+        color: #fff;
+        background-color: #315ba7;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .verify-btn:hover {
+        background-color: #284a8a;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="sidebar-logo">
+        <img
+          src="ChatGPT Image 21 มิ.ย. 2568 10_23_59.png"
+          alt="Atom Industry"
+          class="logo"
+        />
+        <img src="DeeCoin.png" alt="DEE" class="dee-logo" />
+      </div>
+      <div class="user-bar">
+        <span class="user-icon">👤</span>
+        <span class="realname" id="name">Loading...</span>
+        <button id="logoutBtn">ออกจากระบบ</button>
+        <option>ไทย</option>
+      </div>
+    </header>
+
+    <nav class="sidebar">
+      <a href="index.html">หน้าหลัก</a>
+      <a href="account.html">บัญชี</a>
+      <a href="All_id.html">- ภาพรวมบัญชี</a>
+      <a href="add-account.html">- เพิ่มบัญชี</a>
+      <a href="wallet.html">กระเป๋าเงิน</a>
+      <a href="account-list.html">- ตลาดซื้อขาย</a>
+      <a href="withdraw.html">- ถอนเงิน</a>
+      <a href="transaction-history.html">- ประวัติทำธุรกรรม</a>
+      <a href="mining-game.html">โปรแกรมเกมส์</a>
+      <a href="other-games.html">- เกมส์อื่นๆ</a>
+      <a href="profile.html">โปรไฟล์</a>
+      <a href="profile.html">- ข้อมูลผู้ใช้</a>
+      <a href="setting.html">- ตั้งค่า</a>
+      <a href="bank-card.html">- Bank card</a>
+      <a href="join.html">ร่วมงานกับเรา</a>
+    </nav>
+
+    <main class="main-index">
+      <div class="form-wrapper">
+        <div class="center-form-container">
+          <div class="page-title">เพิ่มบัญชีใหม่</div>
+
+          <form id="sendCodeForm" class="add-account-box">
+            <p>
+              กรอกอีเมลใหม่ที่ต้องการเพิ่ม (ต้องเป็นอีเมลที่ยังไม่เคยลงทะเบียน)
+            </p>
+            <div class="form-group" style="margin-top: 1rem">
+              <label for="newEmail">อีเมลใหม่</label>
+              <input
+                type="email"
+                id="newEmail"
+                placeholder="กรอกอีเมลใหม่"
+                required
+              />
+            </div>
+            <div class="row" style="margin-top: 20px">
+              <button type="submit" id="sendCodeBtn" class="btn verify-btn">
+                ส่งรหัสยืนยัน
+              </button>
+            </div>
+          </form>
+
+          <form
+            id="verifyAndRegisterForm"
+            class="add-account-box"
+            style="display: none"
+          >
+            <p style="text-align: center">
+              กรุณาตรวจสอบรหัสยืนยัน 6 หลักที่ส่งไปยัง
+              <strong id="emailDisplay"></strong>
+            </p>
+            <div class="form-group" style="margin-top: 1rem">
+              <label for="verificationCode">รหัสยืนยัน</label>
+              <input
+                type="text"
+                id="verificationCode"
+                placeholder="กรอกรหัส 6 หลัก"
+                required
+                maxlength="6"
+              />
+            </div>
+            <div class="row" style="margin-top: 20px">
+              <button
+                type="submit"
+                id="createAccountBtn"
+                class="btn verify-btn"
+              >
+                ยืนยันและส่งคำขอ
+              </button>
+            </div>
+          </form>
+
+          <div
+            id="successView"
+            class="add-account-box"
+            style="display: none; text-align: center"
+          ></div>
+        </div>
+      </div>
+    </main>
+    <footer class="footer-account">
+      <div class="android-row">
+        <span>android</span>
+        <img
+          src="android-icon-logo-png_seeklogo-306470.png"
+          class="android-icon"
+          alt="android"
+        />
+        <img src="frame.png" class="qr-icon" alt="qr code" />
+      </div>
+
+      <div class="flag-row">
+        <div class="lang-row">
+          <img
+            src="istockphoto-1032082612-612x612.jpg"
+            alt="Thai Flag"
+            class="flag"
+          />
+          <span class="lang-text">ไทย</span>
+        </div>
+      </div>
+
+      <div class="side-social">
+        <a href="https://www.facebook.com/profile.php?id=61579275875237"
+          ><img src="Facbook.jpg" alt="Facebook"
+        /></a>
+        <a href="https://lin.ee/RJo5SD2"><img src="Line.jpg" alt="Line" /></a>
+      </div>
+    </footer>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+      import {
+        getFunctions,
+        httpsCallable,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-functions.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCmrCEiO2kVl5j3VlwPycOYABoEiA0Kkts",
+        authDomain: "kudthong-f67a2.firebaseapp.com",
+        databaseURL:
+          "https://kudthong-f67a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "kudthong-f67a2",
+        storageBucket: "kudthong-f67a2.appspot.com",
+        messagingSenderId: "140418020508",
+        appId: "1:140418020508:web:1d2feb2b7b1bd9ea0ee959",
+      };
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+      const functions = getFunctions(app, "asia-southeast1");
+
+      let currentUser = null;
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          currentUser = user;
+          const userProfileRef = ref(database, `usersID/${user.uid}/profile`);
+          onValue(userProfileRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              document.getElementById("name").innerText =
+                data.realName || data.nickname || user.email;
+            }
+          });
+        } else {
+          window.location.href = "./login.html";
+        }
+      });
+
+      const sendCodeForm = document.getElementById("sendCodeForm");
+      const verifyAndRegisterForm = document.getElementById(
+        "verifyAndRegisterForm"
+      );
+      const newEmailInput = document.getElementById("newEmail");
+
+      sendCodeForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const newEmail = newEmailInput.value;
+        const sendCodeBtn = document.getElementById("sendCodeBtn");
+        sendCodeBtn.disabled = true;
+        sendCodeBtn.innerText = "กำลังส่ง...";
+        try {
+          const sendVerificationCode = httpsCallable(
+            functions,
+            "sendVerificationCode"
+          );
+          const result = await sendVerificationCode({ email: newEmail });
+          alert(result.data.message);
+          sendCodeForm.style.display = "none";
+          verifyAndRegisterForm.style.display = "block";
+          document.getElementById("emailDisplay").innerText = newEmail;
+        } catch (error) {
+          alert("เกิดข้อผิดพลาด: " + error.message);
+        } finally {
+          sendCodeBtn.disabled = false;
+          sendCodeBtn.innerText = "ส่งรหัสยืนยัน";
+        }
+      });
+
+      verifyAndRegisterForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const createBtn = document.getElementById("createAccountBtn");
+        if (!currentUser) {
+          alert("เกิดข้อผิดพลาด: ไม่พบข้อมูลผู้ใช้ปัจจุบัน");
+          return;
+        }
+        createBtn.disabled = true;
+        createBtn.innerText = "กำลังส่งคำขอ...";
+
+        try {
+          const requestSubAccountCreation = httpsCallable(
+            functions,
+            "requestSubAccountCreation"
+          );
+          const result = await requestSubAccountCreation({
+            code: document.getElementById("verificationCode").value,
+            newEmail: newEmailInput.value,
+          });
+
+          if (result.data.success) {
+            verifyAndRegisterForm.style.display = "none";
+            const successView = document.getElementById("successView");
+            successView.innerHTML = `
+              <h3 style="color: green;">ส่งคำขอสำเร็จ!</h3>
+              <p>${result.data.message}</p>
+              <p style="margin-top: 20px; font-size: 0.9em; color: #555">เมื่อผู้ดูแลอนุมัติแล้ว รหัสผ่านชั่วคราวจะถูกส่งไปยังอีเมล <strong>${newEmailInput.value}</strong></p>
+              <a href="account-list.html" class="btn verify-btn" style="text-decoration: none; display: block; text-align: center; margin-top: 20px;">กลับไปหน้ารวมบัญชี</a>
+            `;
+            successView.style.display = "block";
+          } else {
+            alert(result.data.message || "เกิดข้อผิดพลาดที่ไม่รู้จัก");
+          }
+        } catch (error) {
+          alert("เกิดข้อผิดพลาด: " + error.message);
+        } finally {
+          createBtn.disabled = false;
+          createBtn.innerText = "ยืนยันและส่งคำขอ";
+        }
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () =>
+        signOut(auth).then(() => {
+          window.location.href = "./login.html";
+        })
+      );
+    </script>
+  </body>
+</html>

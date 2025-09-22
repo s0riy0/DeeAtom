@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ATOM INDUSTRY</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .copy-btn {
+        margin-left: 8px;
+        padding: 2px 8px;
+        font-size: 12px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f0f0f0;
+      }
+      .copy-btn:hover {
+        background-color: #e0e0e0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="sidebar-logo">
+        <img src="ChatGPT Image 21 มิ.ย. 2568 10_23_59.png" alt="Atom Industry" class="logo"/>
+        <img src="DeeCoin.png" alt="DEE" class="dee-logo"/>
+      </div>
+      <div class="user-bar">
+        <span class="user-icon">👤</span>
+        <span class="realname" id="name">Loading...</span>
+        <button id="logoutBtn">ออกจากระบบ</button>
+        <option>ไทย</option>
+      </div>
+    </header>
+    <nav class="sidebar">
+      <a href="index.html">หน้าหลัก</a>
+      <a href="account.html">บัญชี</a>
+      <a href="All_id.html">- ภาพรวมบัญชี</a>
+      <a href="add-account.html">- เพิ่มบัญชี</a>
+      <a href="wallet.html">กระเป๋าเงิน</a>
+      <a href="account-list.html">- ตลาดซื้อขาย</a>
+      <a href="withdraw.html">- ถอนเงิน</a>
+      <a href="transaction-history.html">- ประวัติทำธุรกรรม</a>
+      <a href="mining-game.html">โปรแกรมเกมส์</a>
+      <a href="other-games.html">- เกมส์อื่นๆ</a>
+      <a href="profile.html">โปรไฟล์</a>
+      <a href="profile.html">- ข้อมูลผู้ใช้</a>
+      <a href="setting.html">- ตั้งค่า</a>
+      <a href="bank-card.html">- Bank card</a>
+      <a href="join.html">ร่วมงานกับเรา</a>
+    </nav>
+
+    <main class="main-index">
+      <div class="page-title">หน้าหลัก</div>
+      <div class="balance-boxes">
+        <div class="balance-col">
+          <div class="balance-label">DEE</div>
+          <div class="balance-amount dee" id="deeBalance">Loading...</div>
+        </div>
+        <div class="balance-col">
+          <div class="balance-label">THB</div>
+          <div class="balance-amount thb" id="thbBalance">Loading...</div>
+        </div>
+      </div>
+      <div class="desc-text">
+        เลขกระเป๋าตังค์: <span id="numberBag">Loading...</span>
+        <button id="copyBtn" class="copy-btn">คัดลอก</button>
+      </div>
+      <div class="score-table">
+        <table>
+          <thead>
+            <tr>
+              <th>อีเมล</th>
+              <th>DeeCoin</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody">
+            </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer class="footer-account">
+      <div class="android-row">
+        <span>android</span>
+        <img
+          src="android-icon-logo-png_seeklogo-306470.png"
+          class="android-icon"
+          alt="android"
+        />
+        <img src="frame.png" class="qr-icon" alt="qr code" />
+      </div>
+
+      <div class="flag-row">
+        <div class="lang-row">
+          <img
+            src="istockphoto-1032082612-612x612.jpg"
+            alt="Thai Flag"
+            class="flag"
+          />
+          <span class="lang-text">ไทย</span>
+        </div>
+      </div>
+
+      <div class="side-social">
+        <a href="https://www.facebook.com/profile.php?id=61579275875237"
+          ><img src="Facbook.jpg" alt="Facebook"
+        /></a>
+        <a href="https://lin.ee/RJo5SD2"><img src="Line.jpg" alt="Line" /></a>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCmrCEiO2kVl5j3VlwPycOYABoEiA0Kkts",
+        authDomain: "kudthong-f67a2.firebaseapp.com",
+        databaseURL: "https://kudthong-f67a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "kudthong-f67a2",
+        storageBucket: "kudthong-f67a2.appspot.com",
+        messagingSenderId: "140418020508",
+        appId: "1:140418020508:web:1d2feb2b7b1bd9ea0ee959",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const tableBody = document.getElementById("leaderboardBody");
+          
+          const addRowToTable = (email, deeCoin, isMaster = false) => {
+              const row = document.createElement('tr');
+              row.innerHTML = `<td>${email} ${isMaster ? '(บัญชีหลัก)' : ''}</td><td>${(deeCoin || 0).toFixed(4)}</td>`;
+              isMaster ? tableBody.prepend(row) : tableBody.appendChild(row);
+          };
+
+          const mainUserRef = ref(database, `usersID/${user.uid}`);
+          onValue(mainUserRef, async (snapshot) => {
+            tableBody.innerHTML = ''; // Clear table on each update
+            const userData = snapshot.val();
+            
+            if (userData && userData.profile) {
+              const profile = userData.profile;
+              document.getElementById("name").innerText = profile.realName || profile.nickname || user.email;
+              document.getElementById("deeBalance").innerText = (profile.DeeCoin || 0).toFixed(4);
+              document.getElementById("thbBalance").innerText = profile.THBwallet || 0;
+              document.getElementById("numberBag").innerText = profile.KeyBag || "N/A";
+              
+              addRowToTable(profile.email, profile.DeeCoin, true);
+            }
+            
+            if (userData && userData.subAccounts) {
+              const subAccountUids = Object.keys(userData.subAccounts);
+              for (const subUid of subAccountUids) {
+                const subProfileSnapshot = await get(ref(database, `usersID/${subUid}/profile`));
+                if (subProfileSnapshot.exists()) {
+                  const subProfile = subProfileSnapshot.val();
+                  addRowToTable(subProfile.email, subProfile.DeeCoin);
+                }
+              }
+            }
+          });
+        } else {
+          window.location.href = "login.html";
+        }
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth).then(() => window.location.href = "login.html"));
+
+      // --- ADD 3: เพิ่มโค้ดสำหรับจัดการการคัดลอก ---
+      document.getElementById("copyBtn").addEventListener("click", () => {
+        const numberBagElement = document.getElementById("numberBag");
+        const copyBtn = document.getElementById("copyBtn");
+        const walletAddress = numberBagElement.innerText;
+
+        // ตรวจสอบว่ามีข้อมูลเลขกระเป๋าที่สามารถคัดลอกได้
+        if (walletAddress && walletAddress !== "Loading..." && walletAddress !== "N/A") {
+          navigator.clipboard.writeText(walletAddress).then(() => {
+            // เมื่อคัดลอกสำเร็จ
+            copyBtn.innerText = "คัดลอกแล้ว!";
+            // เปลี่ยนข้อความกลับเป็น "คัดลอก" ใน 2 วินาที
+            setTimeout(() => {
+              copyBtn.innerText = "คัดลอก";
+            }, 2000);
+          }).catch(err => {
+            // กรณีเกิดข้อผิดพลาด
+            console.error("ไม่สามารถคัดลอกได้: ", err);
+            alert("เกิดข้อผิดพลาดในการคัดลอก");
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

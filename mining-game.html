@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ATOM INDUSTRY - โปรแกรมเกมส์</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* เพิ่มสไตล์เพื่อให้แน่ใจว่าลิงก์แสดงผลถูกต้อง */
+      .mining-game-img-row a,
+      .googleplay-row a {
+        display: inline-block; /* ทำให้ลิงก์มีขนาดเท่ากับรูปภาพ */
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="sidebar-logo">
+        <img
+          src="ChatGPT Image 21 มิ.ย. 2568 10_23_59.png"
+          alt="Atom Industry"
+          class="logo"
+        />
+        <img src="DeeCoin.png" alt="DEE" class="dee-logo" />
+      </div>
+      <div class="user-bar">
+        <span class="user-icon">👤</span>
+        <span class="realname" id="name">Loading...</span>
+        <button id="logoutBtn">ออกจากระบบ</button>
+        <option>ไทย</option>
+      </div>
+    </header>
+
+    <nav class="sidebar">
+      <a href="index.html">หน้าหลัก</a>
+      <a href="account.html">บัญชี</a>
+      <a href="All_id.html">- ภาพรวมบัญชี</a>
+      <a href="add-account.html">- เพิ่มบัญชี</a>
+      <a href="wallet.html">กระเป๋าเงิน</a>
+      <a href="account-list.html">- ตลาดซื้อขาย</a>
+      <a href="withdraw.html">- ถอนเงิน</a>
+      <a href="transaction-history.html">- ประวัติทำธุรกรรม</a>
+      <a href="mining-game.html">โปรแกรมเกมส์</a>
+      <a href="other-games.html">- เกมส์อื่นๆ</a>
+      <a href="profile.html">โปรไฟล์</a>
+      <a href="profile.html">- ข้อมูลผู้ใช้</a>
+      <a href="setting.html">- ตั้งค่า</a>
+      <a href="bank-card.html">- Bank card</a>
+      <a href="join.html">ร่วมงานกับเรา</a>
+    </nav>
+
+    <main class="main-content-mining">
+      <div class="page-title-mining">โปรแกรมเกมส์ขุด</div>
+      <div class="googleplay-row">
+        <!-- START: แก้ไขโดยการเพิ่มแท็ก <a> -->
+        <a
+          href="https://play.google.com/store/apps/details?id=com.KudThong.Kudthong_Project"
+          target="_blank"
+        >
+          <img
+            src="ChatGPT Image Jun 18, 2025, 02_59_41 PM.png"
+            alt="Get it on Google Play"
+            class="google-play-btn"
+          />
+        </a>
+        <!-- END: แก้ไขโดยการเพิ่มแท็ก <a> -->
+      </div>
+    </main>
+
+    <footer class="footer-mining">
+      <div class="android-row">
+        <span>android</span>
+        <img
+          src="android-icon-logo-png_seeklogo-306470.png"
+          class="android-icon"
+          alt="android"
+        />
+        <img src="frame.png" class="qr-icon" alt="qr code" />
+      </div>
+
+      <div class="flag-row">
+        <div class="lang-row">
+          <img
+            src="istockphoto-1032082612-612x612.jpg"
+            alt="Thai Flag"
+            class="flag"
+          />
+          <span class="lang-text">ไทย</span>
+        </div>
+      </div>
+
+      <div class="side-social">
+        <a href="https://www.facebook.com/profile.php?id=61579275875237"
+          ><img src="Facbook.jpg" alt="Facebook"
+        /></a>
+        <a href="https://lin.ee/RJo5SD2"><img src="Line.jpg" alt="Line" /></a>
+      </div>
+    </footer>
+
+    <script type="module">
+      // Import SDKs
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+      // Firebase Config
+      const firebaseConfig = {
+        apiKey: "AIzaSyCmrCEiO2kVl5j3VlwPycOYABoEiA0Kkts",
+        authDomain: "kudthong-f67a2.firebaseapp.com",
+        databaseURL:
+          "https://kudthong-f67a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "kudthong-f67a2",
+        storageBucket: "kudthong-f67a2.appspot.com",
+        messagingSenderId: "140418020508",
+        appId: "1:140418020508:web:1d2feb2b7b1bd9ea0ee959",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const userProfileRef = ref(database, `usersID/${user.uid}/profile`);
+          onValue(userProfileRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              document.getElementById("name").innerText =
+                data.realName || data.nickname || user.email;
+            }
+          });
+        } else {
+          window.location.href = "./login.html";
+        }
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        signOut(auth).then(() => {
+          window.location.href = "./login.html";
+        });
+      });
+    </script>
+  </body>
+</html>

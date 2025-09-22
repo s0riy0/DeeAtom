@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ATOM INDUSTRY - ถอนเงิน</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .withdraw-form {
+        background: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+      }
+      .form-group label.required::after {
+        content: " *";
+        color: red;
+      }
+      .form-group input[type="text"],
+      .form-group input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .form-group input[readonly] {
+        background-color: #f0f0f0;
+        cursor: not-allowed;
+      }
+      .account-table {
+        margin-top: 20px;
+      }
+      .account-table table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .account-table th,
+      .account-table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      .account-table th {
+        background-color: #34495e;
+        color: white;
+      }
+      .withdraw-btn {
+        background-color: #27ae60;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+        width: 100%;
+        transition: background-color 0.3s;
+      }
+      .withdraw-btn:hover {
+        background-color: #229954;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="sidebar-logo">
+        <img
+          src="ChatGPT Image 21 มิ.ย. 2568 10_23_59.png"
+          alt="Atom Industry"
+          class="logo"
+        />
+        <img src="DeeCoin.png" alt="DEE" class="dee-logo" />
+      </div>
+      <div class="user-bar">
+        <span class="user-icon">👤</span>
+        <span class="realname" id="name">Loading...</span>
+        <button id="logoutBtn">ออกจากระบบ</button>
+        <option>ไทย</option>
+      </div>
+    </header>
+
+    <nav class="sidebar">
+      <a href="index.html">หน้าหลัก</a>
+      <a href="account.html">บัญชี</a>
+      <a href="All_id.html">- ภาพรวมบัญชี</a>
+      <a href="add-account.html">- เพิ่มบัญชี</a>
+      <a href="wallet.html">กระเป๋าเงิน</a>
+      <a href="account-list.html">- ตลาดซื้อขาย</a>
+      <a href="withdraw.html">- ถอนเงิน</a>
+      <a href="transaction-history.html">- ประวัติทำธุรกรรม</a>
+      <a href="mining-game.html">โปรแกรมเกมส์</a>
+      <a href="other-games.html">- เกมส์อื่นๆ</a>
+      <a href="profile.html">โปรไฟล์</a>
+      <a href="profile.html">- ข้อมูลผู้ใช้</a>
+      <a href="setting.html">- ตั้งค่า</a>
+      <a href="bank-card.html">- Bank card</a>
+      <a href="join.html">ร่วมงานกับเรา</a>
+    </nav>
+
+    <main class="main-withdraw">
+      <div class="page-title">ถอนเงิน</div>
+      <form class="withdraw-form" id="withdrawForm">
+        <div class="form-group">
+          <label for="account" class="required">เลือกบัญชี</label>
+          <input
+            type="text"
+            id="accountBalance"
+            value="กำลังโหลด..."
+            readonly
+          />
+        </div>
+        <div class="form-group">
+          <label for="channel" class="required">ช่องทางการถอน</label>
+          <input type="text" id="channel" value="การถอนเงิน THB" readonly />
+        </div>
+        <div class="form-group">
+          <label for="withdrawer" class="required">บัญชีผู้ถอน</label>
+          <input type="text" id="withdrawer" value="กำลังโหลด..." readonly />
+        </div>
+        <div class="form-group">
+          <label for="withdraw-amount" class="required"
+            >จำนวนเงินที่ถอน THB</label
+          >
+          <input
+            type="number"
+            id="withdraw-amount"
+            placeholder="กรอกจำนวนเงินที่ต้องการถอน"
+            required
+          />
+        </div>
+        <button type="submit" class="withdraw-btn">ส่งคำขอถอนเงิน</button>
+      </form>
+      <div class="account-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ชื่อบัญชีธนาคาร</th>
+              <th>ชื่อ - สกุล (ภาษาอังกฤษ)</th>
+              <th>เลขบัญชี</th>
+              <th>ธนาคาร</th>
+              <th>สาขา</th>
+              <th>ที่อยู่</th>
+            </tr>
+          </thead>
+          <tbody id="bankInfoBody">
+            <tr>
+              <td colspan="6" style="text-align: center">
+                กำลังโหลดข้อมูลบัญชี...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer class="footer-withdraw"></footer>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        get,
+        update,
+        push,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCmrCEiO2kVl5j3VlwPycOYABoEiA0Kkts",
+        authDomain: "kudthong-f67a2.firebaseapp.com",
+        databaseURL:
+          "https://kudthong-f67a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "kudthong-f67a2",
+        storageBucket: "kudthong-f67a2.appspot.com",
+        messagingSenderId: "140418020508",
+        appId: "1:140418020508:web:1d2feb2b7b1bd9ea0ee959",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+
+      let currentUser = null;
+      let userProfile = null;
+      let userBankInfo = null;
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          currentUser = user;
+          const userRef = ref(database, "usersID/" + user.uid);
+          onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              userProfile = data.profile;
+              userBankInfo = data.bankCardInfo;
+              updateUI();
+            }
+          });
+        } else {
+          window.location.href = "login.html";
+        }
+      });
+
+      function updateUI() {
+        if (userProfile) {
+          document.getElementById("name").innerText =
+            userProfile.realName || userProfile.nickname || currentUser.email;
+          document.getElementById(
+            "accountBalance"
+          ).value = `กระเป๋าเงิน THB ยอดคงเหลือ : ${
+            userProfile.THBwallet || 0
+          } THB`;
+          document.getElementById("withdrawer").value = `การถอนเงิน THB - ${
+            userProfile.realName || "N/A"
+          }`;
+        }
+        if (userBankInfo) {
+          const bankTableBody = document.getElementById("bankInfoBody");
+          bankTableBody.innerHTML = `
+                    <tr>
+                        <td>${userBankInfo.accountNameTh || "N/A"}</td>
+                        <td>${userBankInfo.accountNameEn || "N/A"}</td>
+                        <td>${
+                          userBankInfo.accountNumber
+                            ? "xxx-x-" + userBankInfo.accountNumber.slice(-5)
+                            : "N/A"
+                        }</td>
+                        <td>${userBankInfo.bankName || "N/A"}</td>
+                        <td>${userBankInfo.branch || "N/A"}</td>
+                        <td>${userBankInfo.branchAddress || "N/A"}</td>
+                    </tr>
+                `;
+        } else {
+          document.getElementById(
+            "bankInfoBody"
+          ).innerHTML = `<tr><td colspan="6" style="text-align: center;">ไม่พบข้อมูลบัญชีธนาคาร กรุณาเพิ่มในหน้าโปรไฟล์</td></tr>`;
+        }
+      }
+
+      document
+        .getElementById("withdrawForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const amountToWithdraw = parseFloat(
+            document.getElementById("withdraw-amount").value
+          );
+          const currentBalance = userProfile.THBwallet || 0;
+
+          if (!amountToWithdraw || amountToWithdraw <= 0) {
+            alert("กรุณากรอกจำนวนเงินที่ต้องการถอนให้ถูกต้อง");
+            return;
+          }
+          if (amountToWithdraw > currentBalance) {
+            alert("ยอดเงินในกระเป๋าไม่เพียงพอ");
+            return;
+          }
+          if (!userBankInfo) {
+            alert("ไม่พบข้อมูลบัญชีธนาคาร กรุณาเพิ่มบัญชีก่อนทำการถอนเงิน");
+            return;
+          }
+
+          const isConfirmed = confirm(
+            `คุณต้องการส่งคำขอถอนเงินจำนวน ${amountToWithdraw} บาทใช่หรือไม่?`
+          );
+          if (!isConfirmed) return;
+
+          const withdrawBtn = e.target.querySelector(".withdraw-btn");
+          withdrawBtn.disabled = true;
+          withdrawBtn.innerText = "กำลังดำเนินการ...";
+
+          try {
+            // สร้างคำขอถอนเงินเพื่อส่งให้แอดมินตรวจสอบ
+            const withdrawalRequestRef = ref(database, "withdrawalRequests");
+            const newRequest = {
+              userId: currentUser.uid,
+              userEmail: currentUser.email,
+              amount: amountToWithdraw,
+              bankInfo: userBankInfo, // ส่งข้อมูลบัญชีทั้งหมด
+              status: "pending",
+              timestamp: serverTimestamp(),
+            };
+            await push(withdrawalRequestRef, newRequest);
+
+            // ไม่มีการหักเงินในหน้านี้แล้ว
+
+            alert("ส่งคำขอถอนเงินสำเร็จ! กรุณารอแอดมินตรวจสอบและดำเนินการ");
+            document.getElementById("withdraw-amount").value = "";
+          } catch (error) {
+            console.error("เกิดข้อผิดพลาดในการส่งคำขอถอนเงิน:", error);
+            alert("เกิดข้อผิดพลาด: " + error.message);
+          } finally {
+            withdrawBtn.disabled = false;
+            withdrawBtn.innerText = "ส่งคำขอถอนเงิน";
+          }
+        });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        signOut(auth).then(() => {
+          window.location.href = "login.html";
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ATOM INDUSTRY - ซื้อเหรียญ DEE</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .buy-form {
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: auto;
+      }
+      .buy-form label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #333;
+      }
+      .buy-form input[type="email"],
+      .buy-form input[type="number"],
+      .buy-form input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 15px;
+        background-color: #f8f8f8;
+      }
+      .buy-form input[type="file"] {
+        margin-top: 5px;
+        display: block;
+      }
+      .buy-slip-hint {
+        background-color: #ffeb3b;
+        padding: 5px 10px;
+        border-radius: 4px;
+        display: inline-block;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="sidebar-logo">
+        <img
+          src="ChatGPT Image 21 มิ.ย. 2568 10_23_59.png"
+          alt="Atom Industry"
+          class="logo"
+        />
+        <img src="DeeCoin.png" alt="DEE" class="dee-logo" />
+      </div>
+      <div class="user-bar">
+        <span class="user-icon">👤</span>
+        <span class="realname" id="name">Loading...</span>
+        <button id="logoutBtn">ออกจากระบบ</button>
+        <option>ไทย</option>
+      </div>
+    </header>
+
+    <nav class="sidebar">
+      <a href="index.html">หน้าหลัก</a>
+      <a href="account.html">บัญชี</a>
+      <a href="account-list.html">- ภาพรวมบัญชี</a>
+      <a href="add-account.html">- เพิ่มบัญชี</a>
+      <a href="account-list.html">กระเป๋าเงิน</a>
+      <a href="account-list.html">- ตลาดซื้อขาย</a>
+      <a href="withdraw.html">- ถอนเงิน</a>
+      <a href="transaction-history.html">- ประวัติทำธุรกรรม</a>
+      <a href="mining-game.html">โปรแกรมเกมส์</a>
+      <a href="other-games.html">- เกมส์อื่นๆ</a>
+      <a href="profile.html">โปรไฟล์</a>
+      <a href="profile.html">- ข้อมูลผู้ใช้</a>
+      <a href="setting.html">- ตั้งค่า</a>
+      <a href="bank-card.html">- Bank card</a>
+      <a href="join.html">ร่วมงานกับเรา</a>
+    </nav>
+
+    <main class="main-content-buy">
+      <div class="page-title-buy">ซื้อเหรียญ DEE</div>
+      <form class="buy-form">
+        <label for="buy-email">Email</label>
+        <input type="email" id="buy-email" disabled value="Loading..." />
+
+        <label for="amount-input">จำนวนเงิน (บาท)</label>
+        <input
+          type="number"
+          id="amount-input"
+          placeholder="กรอกจำนวนเงินที่โอน"
+          required
+        />
+
+        <label for="keybag-input">เลขกระเป๋าตังค์</label>
+        <input
+          type="text"
+          id="keybag-input"
+          placeholder="กรอกเลขกระเป๋าตังค์เพื่อยืนยัน"
+          required
+        />
+
+        <div class="buy-qr-pay" style="text-align: center; margin: 20px 0">
+          <img
+            src="payment.jpg"
+            alt="PromptPay QR"
+            class="promptpay-qr"
+            style="max-width: 150px"
+            onerror="this.style.display='none'"
+          />
+        </div>
+
+        <label for="slipUpload" class="buy-slip-hint">แนบสลิป</label>
+        <input type="file" id="slipUpload" accept="image/*" required />
+
+        <button
+          type="submit"
+          id="submitBtn"
+          class="btn-buy"
+          style="margin-top: 20px"
+        >
+          ส่ง
+        </button>
+      </form>
+    </main>
+
+    <footer class="footer-account">
+      <div class="flag-row">
+        <div class="lang-row">
+          <img
+            src="istockphoto-1032082612-612x612.jpg"
+            alt="Thai Flag"
+            class="flag"
+          />
+          <span class="lang-text">ไทย</span>
+        </div>
+      </div>
+
+      <div class="side-social">
+        <a href="https://www.facebook.com/profile.php?id=61579275875237"
+          ><img src="Facbook.jpg" alt="Facebook"
+        /></a>
+        <a href="https://lin.ee/RJo5SD2"><img src="Line.jpg" alt="Line" /></a>
+      </div>
+    </footer>
+
+    <script type="module">
+      // 1. Import SDKs
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        update,
+        push,
+        set,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+      import {
+        getStorage,
+        ref as storageRef,
+        uploadBytes,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+
+      // 2. Firebase Config
+      const firebaseConfig = {
+        apiKey: "AIzaSyCmrCEiO2kVl5j3VlwPycOYABoEiA0Kkts",
+        authDomain: "kudthong-f67a2.firebaseapp.com",
+        databaseURL:
+          "https://kudthong-f67a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "kudthong-f67a2",
+        storageBucket: "kudthong-f67a2.appspot.com",
+        messagingSenderId: "140418020508",
+        appId: "1:140418020508:web:1d2feb2b7b1bd9ea0ee959",
+      };
+
+      // 3. Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+      const storage = getStorage(app);
+
+      let currentUser = null;
+      let userProfileData = null;
+
+      // 4. Auth State and Data Fetching
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          currentUser = user;
+          const userProfileRef = ref(
+            database,
+            "usersID/" + user.uid + "/profile"
+          );
+          document.getElementById("buy-email").value = user.email;
+          onValue(userProfileRef, (snapshot) => {
+            userProfileData = snapshot.val();
+            if (userProfileData) {
+              document.getElementById("name").innerText =
+                userProfileData.realName ||
+                userProfileData.nickname ||
+                user.email;
+            }
+          });
+        } else {
+          window.location.href = "./login.html";
+        }
+      });
+
+      // 5. Form Submission (Updated for new flow)
+      document
+        .querySelector(".buy-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          if (!currentUser || !userProfileData) {
+            alert("เกิดข้อผิดพลาด: ข้อมูลผู้ใช้ยังไม่ถูกโหลด");
+            return;
+          }
+
+          const amountInput = document.getElementById("amount-input").value;
+          const keybagInput = document.getElementById("keybag-input").value;
+          const slipFile = document.getElementById("slipUpload").files[0];
+
+          if (!amountInput || !keybagInput || !slipFile) {
+            alert("กรุณากรอกข้อมูลและแนบสลิปให้ครบถ้วน");
+            return;
+          }
+
+          const submitBtn = document.getElementById("submitBtn");
+          submitBtn.disabled = true;
+          submitBtn.innerText = "กำลังดำเนินการ...";
+
+          try {
+            const timestamp = Date.now();
+            const userProfileRef = ref(
+              database,
+              `usersID/${currentUser.uid}/profile`
+            );
+            
+            // *** START OF CHANGE ***
+            // บันทึกทั้งจำนวนเงินและเวลาที่ขอเข้าระบบ
+            await update(userProfileRef, {
+              THBwallet: parseFloat(amountInput),
+              topUpRequestTime: timestamp 
+            });
+            // *** END OF CHANGE ***
+
+            const filePath = `slips/${currentUser.uid}/${timestamp}-${slipFile.name}`;
+            const fileRef = storageRef(storage, filePath);
+            await uploadBytes(fileRef, slipFile);
+
+            const userHistoryRef = ref(
+              database,
+              `usersID/${currentUser.uid}/purchaseHistory`
+            );
+            const newHistoryRef = push(userHistoryRef);
+            const historyData = {
+              amountTHB: parseFloat(amountInput),
+              status: "pending",
+              timestamp: timestamp,
+            };
+            await set(newHistoryRef, historyData);
+
+            alert("ส่งข้อมูลสำเร็จ! กรุณารอแอดมินตรวจสอบและดำเนินการ");
+            e.target.reset();
+          } catch (error) {
+            console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
+            alert(`เกิดข้อผิดพลาด: ${error.message}`);
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "ส่ง";
+          }
+        });
+
+      // 6. Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        signOut(auth).then(() => {
+          window.location.href = "./login.html";
+        });
+      });
+    </script>
+  </body>
+</html>

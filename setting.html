@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ATOM INDUSTRY - ตั้งค่า</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .setting-container {
+        background-color: #fff;
+        padding: 20px 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+      .setting-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 10px;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 1.1em;
+      }
+      .setting-row:last-child {
+        border-bottom: none;
+      }
+      .setting-label {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        white-space: nowrap; /* แก้ไข: ป้องกันข้อความด้านซ้ายขึ้นบรรทัดใหม่ */
+      }
+      .setting-label .icon {
+        font-size: 1.5em;
+      }
+      .setting-action {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0; /* แก้ไข: ป้องกันกล่องด้านขวายุบตัว */
+      }
+      .setting-action .btn {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #3498db;
+        color: white;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+        white-space: nowrap; /* เพิ่ม: ป้องกันข้อความบนปุ่มขึ้นบรรทัดใหม่ */
+      }
+      .setting-action .btn-secondary {
+        background-color: #95a5a6;
+      }
+      .setting-action .btn:hover {
+        background-color: #2980b9;
+      }
+      .setting-action .status {
+        font-size: 0.9em;
+        color: #555;
+        white-space: nowrap; /* เพิ่ม: ป้องกันข้อความสถานะขึ้นบรรทัดใหม่ */
+      }
+      .status.verified {
+        color: #27ae60;
+        font-weight: bold;
+      }
+      .status.not-verified {
+        color: #e74c3c;
+      }
+      .phone-display {
+        display: inline-block;
+        min-width: 120px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="sidebar-logo">
+        <img
+          src="ChatGPT Image 21 มิ.ย. 2568 10_23_59.png"
+          alt="Atom Industry"
+          class="logo"
+        />
+        <img src="DeeCoin.png" alt="DEE" class="dee-logo" />
+      </div>
+      <div class="user-bar">
+        <span class="user-icon">👤</span>
+        <span class="realname" id="name">Loading...</span>
+        <button id="logoutBtn">ออกจากระบบ</button>
+        <option>ไทย</option>
+      </div>
+    </header>
+
+    <nav class="sidebar">
+      <a href="index.html">หน้าหลัก</a>
+      <a href="account.html">บัญชี</a>
+      <a href="All_id.html">- ภาพรวมบัญชี</a>
+      <a href="add-account.html">- เพิ่มบัญชี</a>
+      <a href="wallet.html">กระเป๋าเงิน</a>
+      <a href="account-list.html">- ตลาดซื้อขาย</a>
+      <a href="withdraw.html">- ถอนเงิน</a>
+      <a href="transaction-history.html">- ประวัติทำธุรกรรม</a>
+      <a href="mining-game.html">โปรแกรมเกมส์</a>
+      <a href="other-games.html">- เกมส์อื่นๆ</a>
+      <a href="profile.html">โปรไฟล์</a>
+      <a href="profile.html">- ข้อมูลผู้ใช้</a>
+      <a href="setting.html">- ตั้งค่า</a>
+      <a href="bank-card.html">- Bank card</a>
+      <a href="join.html">ร่วมงานกับเรา</a>
+    </nav>
+
+    <main class="main-content-set">
+      <div class="page-title-set">ตั้งค่า</div>
+      <div class="setting-container">
+        <div class="setting-row">
+          <div class="setting-label">
+            <span class="icon">🔒</span>
+            <span>เปลี่ยนรหัสผ่าน</span>
+          </div>
+          <div class="setting-action">
+            <button id="changePasswordBtn" class="btn">ส่งลิงก์รีเซ็ต</button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <span class="icon">📱</span>
+            <span id="phoneContainer">
+              หมายเลขโทรศัพท์:
+              <span id="phoneDisplay" class="phone-display">กำลังโหลด...</span>
+            </span>
+          </div>
+          <div class="setting-action">
+            <button id="editPhoneBtn" class="btn">แก้ไข</button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <span class="icon">✅</span>
+            <span>ยืนยันบัตรสมาชิก</span>
+          </div>
+          <div class="setting-action">
+            <span id="memberStatus" class="status">กำลังตรวจสอบ...</span>
+            <button id="verifyMemberBtn" class="btn" style="display: none">
+              ยืนยัน
+            </button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <span class="icon">✈️</span>
+            <span>สถานะการยืนยันอีเมล</span>
+          </div>
+          <div class="setting-action">
+            <span id="emailStatus" class="status">กำลังตรวจสอบ...</span>
+            <button id="verifyEmailBtn" class="btn" style="display: none">
+              ส่งอีเมลยืนยัน
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="footer-set">
+      <div class="android-row">
+        <span>android</span>
+        <img
+          src="android-icon-logo-png_seeklogo-306470.png"
+          class="android-icon"
+          alt="android"
+        />
+        <img src="frame.png" class="qr-icon" alt="qr code" />
+      </div>
+
+      <div class="flag-row">
+        <div class="lang-row">
+          <img
+            src="istockphoto-1032082612-612x612.jpg"
+            alt="Thai Flag"
+            class="flag"
+          />
+          <span class="lang-text">ไทย</span>
+        </div>
+      </div>
+
+      <div class="side-social">
+        <a href="https://www.facebook.com/profile.php?id=61579275875237"
+          ><img src="Facbook.jpg" alt="Facebook"
+        /></a>
+        <a href="https://lin.ee/RJo5SD2"><img src="Line.jpg" alt="Line" /></a>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+        sendPasswordResetEmail,
+        sendEmailVerification,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        update,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCmrCEiO2kVl5j3VlwPycOYABoEiA0Kkts",
+        authDomain: "kudthong-f67a2.firebaseapp.com",
+        databaseURL:
+          "https://kudthong-f67a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "kudthong-f67a2",
+        storageBucket: "kudthong-f67a2.appspot.com",
+        messagingSenderId: "140418020508",
+        appId: "1:140418020508:web:1d2feb2b7b1bd9ea0ee959",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+
+      let currentUser = null;
+      let userProfileRef = null;
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          currentUser = user;
+          userProfileRef = ref(database, `usersID/${user.uid}/profile`);
+
+          onValue(userProfileRef, (snapshot) => {
+            const profileData = snapshot.val();
+            updateUI(user, profileData);
+          });
+        } else {
+          window.location.href = "login.html";
+        }
+      });
+
+      function updateUI(user, profileData) {
+        // Header
+        document.getElementById("name").innerText =
+          profileData?.realName || profileData?.nickname || user.email;
+
+        // Phone Number
+        const phoneDisplay = document.getElementById("phoneDisplay");
+        phoneDisplay.innerText =
+          profileData?.accountPhone || "ยังไม่ได้ตั้งค่า";
+
+        // Member Verification
+        const memberStatus = document.getElementById("memberStatus");
+        const verifyMemberBtn = document.getElementById("verifyMemberBtn");
+        if (profileData?.isMemberVerified) {
+          memberStatus.textContent = "ยืนยันแล้ว";
+          memberStatus.className = "status verified";
+          verifyMemberBtn.style.display = "none";
+        } else {
+          memberStatus.textContent = "ยังไม่ได้ยืนยัน";
+          memberStatus.className = "status not-verified";
+          verifyMemberBtn.style.display = "inline-block";
+        }
+
+        // Email Verification
+        const emailStatus = document.getElementById("emailStatus");
+        const verifyEmailBtn = document.getElementById("verifyEmailBtn");
+        if (user.emailVerified) {
+          emailStatus.textContent = "ยืนยันแล้ว";
+          emailStatus.className = "status verified";
+          verifyEmailBtn.style.display = "none";
+        } else {
+          emailStatus.textContent = "ยังไม่ยืนยัน";
+          emailStatus.className = "status not-verified";
+          verifyEmailBtn.style.display = "inline-block";
+        }
+      }
+
+      // --- Event Listeners ---
+
+      // 1. Change Password
+      document
+        .getElementById("changePasswordBtn")
+        .addEventListener("click", () => {
+          if (
+            confirm(
+              `คุณต้องการให้ระบบส่งอีเมลสำหรับรีเซ็ตรหัสผ่านไปที่ ${currentUser.email} หรือไม่?`
+            )
+          ) {
+            sendPasswordResetEmail(auth, currentUser.email)
+              .then(() => {
+                alert(
+                  "ส่งอีเมลสำหรับรีเซ็ตรหัสผ่านแล้ว กรุณาตรวจสอบกล่องข้อความของคุณ (หากไม่พบ โปรดตรวจสอบในกล่องอีเมลขยะ)"
+                );
+              })
+              .catch((error) => {
+                console.error("Password Reset Error:", error); // เพิ่ม log
+                alert("เกิดข้อผิดพลาดในการส่งอีเมลรีเซ็ตรหัสผ่าน: " + error.message);
+              });
+          }
+        });
+
+      // 2. Edit Phone Number
+      const editPhoneBtn = document.getElementById("editPhoneBtn");
+      const phoneContainer = document.getElementById("phoneContainer");
+      editPhoneBtn.addEventListener("click", () => {
+        if (editPhoneBtn.textContent === "แก้ไข") {
+          const currentPhone =
+            document.getElementById("phoneDisplay").textContent;
+          const phoneInput = document.createElement("input");
+          phoneInput.type = "tel";
+          phoneInput.id = "phoneInput";
+          phoneInput.value =
+            currentPhone === "ยังไม่ได้ตั้งค่า" ? "" : currentPhone;
+          phoneInput.placeholder = "กรอกเบอร์โทรศัพท์";
+
+          phoneContainer.innerHTML = "หมายเลขโทรศัพท์: ";
+          phoneContainer.appendChild(phoneInput);
+          editPhoneBtn.textContent = "บันทึก";
+          editPhoneBtn.classList.add("btn-secondary");
+        } else {
+          const newPhone = document.getElementById("phoneInput").value;
+          if (userProfileRef) {
+            update(userProfileRef, { accountPhone: newPhone })
+              .then(() => {
+                alert("อัปเดตเบอร์โทรศัพท์สำเร็จ");
+                phoneContainer.innerHTML = `หมายเลขโทรศัพท์: <span id="phoneDisplay" class="phone-display">${
+                  newPhone || "ยังไม่ได้ตั้งค่า"
+                }</span>`;
+                editPhoneBtn.textContent = "แก้ไข";
+                editPhoneBtn.classList.remove("btn-secondary");
+              })
+              .catch((error) => {
+                  console.error("Update Phone Error:", error);
+                  alert("เกิดข้อผิดพลาด: " + error.message)
+              });
+          }
+        }
+      });
+
+      // 3. Verify Member
+      document
+        .getElementById("verifyMemberBtn")
+        .addEventListener("click", () => {
+          if (confirm("คุณต้องการยืนยันบัตรสมาชิกหรือไม่?")) {
+            if (userProfileRef) {
+              update(userProfileRef, { isMemberVerified: true })
+                .then(() => alert("ยืนยันบัตรสมาชิกสำเร็จ!"))
+                .catch((error) => {
+                    console.error("Verify Member Error:", error);
+                    alert("เกิดข้อผิดพลาด: " + error.message)
+                });
+            }
+          }
+        });
+
+      // 4. Verify Email
+      document
+        .getElementById("verifyEmailBtn")
+        .addEventListener("click", () => {
+          if (
+            confirm(
+              `คุณต้องการให้ระบบส่งอีเมลยืนยันตัวตนไปที่ ${currentUser.email} อีกครั้งหรือไม่?`
+            )
+          ) {
+            sendEmailVerification(currentUser)
+              .then(() => {
+                alert(
+                  "ส่งอีเมลยืนยันแล้ว กรุณาตรวจสอบกล่องข้อความและคลิกลิงก์เพื่อยืนยัน (หากไม่พบ โปรดตรวจสอบในกล่องอีเมลขยะ)"
+                );
+              })
+              .catch((error) => {
+                console.error("Email Verification Error:", error); // เพิ่ม log
+                alert("เกิดข้อผิดพลาดในการส่งอีเมลยืนยัน: " + error.message);
+              });
+          }
+        });
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        signOut(auth).then(() => {
+          window.location.href = "login.html";
+        });
+      });
+    </script>
+  </body>
+</html>

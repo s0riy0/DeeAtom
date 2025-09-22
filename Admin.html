@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Panel - ATOM INDUSTRY</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: Tahoma, sans-serif;
+        background-color: #f4f7f6;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+      .container {
+        max-width: 1200px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+      h1,
+      h2 {
+        color: #2c3e50;
+      }
+      #logoutBtn {
+        padding: 8px 15px;
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      #logoutBtn:hover {
+        background-color: #c0392b;
+      }
+      .nav-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        flex-wrap: wrap;
+      }
+      .nav-btn {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .nav-btn:hover {
+        background-color: #2980b9;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        table-layout: fixed;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+        word-wrap: break-word;
+      }
+      th {
+        background-color: #34495e;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      .action-btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        margin-right: 5px;
+      }
+      .approve-btn {
+        background-color: #27ae60;
+      }
+      .reject-btn {
+        background-color: #c0392b;
+      }
+      section {
+        margin-bottom: 40px;
+        scroll-margin-top: 20px;
+      }
+      .editable-input {
+        width: 90%;
+        padding: 5px;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="adminContainer" style="display: none">
+      <header>
+        <h1>Admin Control Panel</h1>
+        <div>
+          <span id="adminEmail" style="margin-right: 15px"></span>
+          <button id="logoutBtn">ออกจากระบบ</button>
+        </div>
+      </header>
+
+      <div class="nav-bar">
+        <a href="#sub-accounts-section" class="nav-btn">อนุมัติบัญชีย่อย</a>
+        <a href="#sell-posts-section" class="nav-btn">อนุมัติโพสต์ขายเหรียญ</a>
+        <a href="#purchase-requests-section" class="nav-btn">อนุมัติการซื้อเหรียญ</a>
+        <a href="#withdrawals-section" class="nav-btn">อนุมัติการถอนเงิน</a>
+      </div>
+
+      <section id="user-overview-section">
+        <h2>ภาพรวมผู้ใช้ทั้งหมด (User Overview)</h2>
+        <table id="allUsersOverviewTable">
+          <thead>
+            <tr>
+              <th>ชื่อจริง</th>
+              <th>อีเมล</th>
+              <th>DeeCoin</th>
+              <th>THBwallet</th>
+            </tr>
+          </thead>
+          <tbody id="allUsersOverviewTableBody"></tbody>
+        </table>
+      </section>
+
+      <section id="sub-accounts-section">
+        <h2>อนุมัติการสร้างบัญชีย่อย</h2>
+        <table id="subAccountsTable">
+          <thead>
+            <tr>
+              <th>อีเมลบัญชีหลัก</th>
+              <th>อีเมลบัญชีย่อย (ใหม่)</th>
+              <th>เวลาที่ขอ</th>
+              <th>การดำเนินการ</th>
+            </tr>
+          </thead>
+          <tbody id="subAccountsTableBody"></tbody>
+        </table>
+      </section>
+
+      <section id="sell-posts-section">
+        <h2>อนุมัติโพสต์ขายเหรียญ</h2>
+        <table id="sellPostsTable">
+          <thead>
+            <tr>
+              <th>อีเมลผู้ใช้</th>
+              <th>DeeCoin (ที่ต้องการขาย)</th>
+              <th>ราคา THB</th>
+              <th>การดำเนินการ</th>
+            </tr>
+          </thead>
+          <tbody id="sellPostsTableBody"></tbody>
+        </table>
+      </section>
+      
+      <section id="purchase-requests-section">
+        <h2>อนุมัติการซื้อเหรียญ (จากตลาด)</h2>
+        <table id="purchaseRequestsTable">
+          <thead>
+            <tr>
+              <th>ผู้ซื้อ</th>
+              <th>ผู้ขาย</th>
+              <th>DeeCoin</th>
+              <th>ราคา THB</th>
+              <th>สลิป</th>
+              <th>เวลาที่ขอ</th>
+              <th>การดำเนินการ</th>
+            </tr>
+          </thead>
+          <tbody id="purchaseRequestsTableBody"></tbody>
+        </table>
+      </section>
+
+      <section id="withdrawals-section">
+        <h2>อนุมัติการถอนเงิน</h2>
+        <table id="withdrawalsTable">
+          <thead>
+            <tr>
+              <th>อีเมลผู้ใช้</th>
+              <th>จำนวนเงิน (THB)</th>
+              <th>ข้อมูลบัญชีธนาคาร</th>
+              <th>เวลาที่ขอ</th>
+              <th>การดำเนินการ</th>
+            </tr>
+          </thead>
+          <tbody id="withdrawalsTableBody"></tbody>
+        </table>
+      </section>
+      
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        get,
+        update,
+        remove,
+        query,
+        orderByChild,
+        equalTo,
+        set,
+        push,
+        serverTimestamp,
+        runTransaction, 
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+       import {
+        getStorage,
+        ref as storageRef,
+        getDownloadURL
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+      import {
+        getFunctions,
+        httpsCallable,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-functions.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCmrCEiO2kVl5j3VlwPycOYABoEiA0Kkts",
+        authDomain: "kudthong-f67a2.firebaseapp.com",
+        databaseURL:
+          "https://kudthong-f67a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "kudthong-f67a2",
+        storageBucket: "kudthong-f67a2.appspot.com",
+        messagingSenderId: "140418020508",
+        appId: "1:140418020508:web:1d2feb2b7b1bd9ea0ee959",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+      const storage = getStorage(app); 
+      const functions = getFunctions(app, "asia-southeast1");
+
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const adminRef = ref(database, "admins/" + user.uid);
+          const snapshot = await get(adminRef);
+          if (snapshot.exists() && snapshot.val() === true) {
+            document.getElementById("adminContainer").style.display = "block";
+            document.getElementById("adminEmail").innerText = user.email;
+            loadAllUserMovements();
+            loadSubAccountRequests(); 
+            loadSellPostRequests();
+            loadPurchaseRequests(); 
+            loadWithdrawalRequests();
+          } else {
+            alert("Access Denied.");
+            window.location.href = "./login.html";
+          }
+        } else {
+          window.location.href = "./login.html";
+        }
+      });
+      
+      // Functions for User Overview, Sub-Accounts, Sell Posts (No Changes)
+      function loadAllUserMovements() {
+        const usersRef = ref(database, "usersID");
+        const tableBody = document.getElementById("allUsersOverviewTableBody");
+        onValue(usersRef, (snapshot) => {
+          tableBody.innerHTML = "";
+          if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+              const userData = childSnapshot.val();
+              if (userData.profile) {
+                const profile = userData.profile;
+                const row = `
+                                <tr>
+                                    <td>${profile.realName || "N/A"}</td>
+                                    <td>${profile.email || "N/A"}</td>
+                                    <td>${(profile.DeeCoin || 0).toFixed(4)}</td>
+                                    <td>${(profile.THBwallet || 0).toFixed(2)}</td>
+                                </tr>`;
+                tableBody.innerHTML += row;
+              }
+            });
+          } else {
+            tableBody.innerHTML =
+              '<tr><td colspan="4" style="text-align: center;">ยังไม่มีข้อมูลผู้ใช้ในระบบ</td></tr>';
+          }
+        });
+      }
+      function loadSubAccountRequests() {
+        const requestsRef = query(
+          ref(database, "subAccountRequests"),
+          orderByChild("status"),
+          equalTo("pending")
+        );
+        const tableBody = document.getElementById("subAccountsTableBody");
+
+        onValue(requestsRef, async (snapshot) => {
+          tableBody.innerHTML = "";
+          if (snapshot.exists()) {
+            const promises = [];
+            snapshot.forEach((child) => {
+              const requestId = child.key;
+              const reqData = child.val();
+
+              const masterProfileRef = ref(
+                database,
+                `usersID/${reqData.originalUid}/profile/email`
+              );
+              const promise = get(masterProfileRef).then(
+                (masterEmailSnapshot) => {
+                  const masterEmail = masterEmailSnapshot.val() || "N/A";
+                  const date = new Date(reqData.timestamp).toLocaleString(
+                    "th-TH"
+                  );
+                  return `
+                                <tr>
+                                    <td>${masterEmail}</td>
+                                    <td>${reqData.newEmail}</td>
+                                    <td>${date}</td>
+                                    <td>
+                                        <button class="action-btn approve-btn" data-req-id="${requestId}">อนุมัติ</button>
+                                        <button class="action-btn reject-btn" data-req-id="${requestId}">ปฏิเสธ</button>
+                                    </td>
+                                </tr>`;
+                }
+              );
+              promises.push(promise);
+            });
+
+            const rows = await Promise.all(promises);
+            tableBody.innerHTML = rows.join("");
+          } else {
+            tableBody.innerHTML =
+              '<tr><td colspan="4" style="text-align: center;">ไม่มีคำขอสร้างบัญชีที่รออนุมัติ</td></tr>';
+          }
+        });
+      }
+      document
+        .getElementById("subAccountsTableBody")
+        .addEventListener("click", async (e) => {
+          const target = e.target;
+          const requestId = target.dataset.reqId;
+          if (!requestId) return;
+
+          const action = target.classList.contains("approve-btn")
+            ? "approve"
+            : "reject";
+          target.disabled = true;
+          target.innerText = "กำลังดำเนินการ...";
+
+          try {
+            const processSubAccountRequest = httpsCallable(
+              functions,
+              "processSubAccountRequest"
+            );
+            const result = await processSubAccountRequest({
+              requestId: requestId,
+              action: action,
+            });
+            alert(result.data.message);
+          } catch (error) {
+            alert("เกิดข้อผิดพลาด: " + error.message);
+            target.disabled = false;
+            target.innerText = action === "approve" ? "อนุมัติ" : "ปฏิเสธ";
+          }
+        });
+      function loadSellPostRequests() {
+        const requestsRef = query(
+          ref(database, "sellPostRequests"),
+          orderByChild("status"),
+          equalTo("pending")
+        );
+        const tableBody = document.getElementById("sellPostsTableBody");
+        onValue(requestsRef, (snapshot) => {
+          tableBody.innerHTML = "";
+          if (snapshot.exists()) {
+            snapshot.forEach((child) => {
+              const postId = child.key;
+              const postData = child.val();
+              tableBody.innerHTML += `
+                            <tr>
+                                <td>${postData.userEmail}</td>
+                                <td><input type="number" class="editable-input" id="dee-${postId}" value="${postData.deeCoinAmount}"></td>
+                                <td><input type="number" class="editable-input" id="thb-${postId}" value="${postData.thbAmount}"></td>
+                                <td>
+                                    <button class="action-btn approve-btn" data-post-id="${postId}" data-user-id="${postData.userId}">อนุมัติ</button>
+                                    <button class="action-btn reject-btn" data-post-id="${postId}">ปฏิเสธ</button>
+                                </td>
+                            </tr>`;
+            });
+          } else {
+            tableBody.innerHTML =
+              '<tr><td colspan="4" style="text-align: center;">ไม่มีรายการโพสต์ที่รออนุมัติ</td></tr>';
+          }
+        });
+      }
+      document
+        .getElementById("sellPostsTableBody")
+        .addEventListener("click", async (e) => {
+          const target = e.target;
+          const postId = target.dataset.postId;
+          if (!postId) return;
+          const postRequestRef = ref(database, `sellPostRequests/${postId}`);
+          if (target.classList.contains("approve-btn")) {
+            const userId = target.dataset.userId;
+            const newDeeCoin = parseFloat(
+              document.getElementById(`dee-${postId}`).value
+            );
+            const newThb = parseFloat(
+              document.getElementById(`thb-${postId}`).value
+            );
+            const userProfileRef = ref(database, `usersID/${userId}/profile`);
+            const userSnapshot = await get(userProfileRef);
+            const currentDeeCoin = userSnapshot.val().DeeCoin || 0;
+            if (newDeeCoin > currentDeeCoin) {
+              alert("ผู้ใช้มี DeeCoin ไม่เพียงพอสำหรับการขายนี้!");
+              return;
+            }
+            const marketItemRef = ref(database, `marketItems/${postId}`);
+            await set(marketItemRef, {
+              userId: userId,
+              userEmail: userSnapshot.val().email,
+              deeCoinAmount: newDeeCoin,
+              thbAmount: newThb,
+              timestamp: serverTimestamp(),
+            });
+            await update(userProfileRef, {
+              DeeCoin: currentDeeCoin - newDeeCoin,
+            });
+            await update(postRequestRef, { status: "approved" });
+            alert("อนุมัติโพสต์สำเร็จ และเพิ่มรายการในตลาดแล้ว");
+          } else if (target.classList.contains("reject-btn")) {
+            await update(postRequestRef, { status: "rejected" });
+            alert("ปฏิเสธโพสต์เรียบร้อยแล้ว");
+          }
+        });
+      
+      // ===== ฟังก์ชันที่แก้ไขใหม่ =====
+      function loadPurchaseRequests() {
+          const requestsRef = query(ref(database, "marketPurchaseRequests"), orderByChild("status"), equalTo("pending"));
+          const tableBody = document.getElementById("purchaseRequestsTableBody");
+
+          onValue(requestsRef, (snapshot) => {
+              tableBody.innerHTML = "";
+              if (!snapshot.exists()) {
+                  tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">ไม่มีคำสั่งซื้อที่รออนุมัติ</td></tr>';
+                  return;
+              }
+
+              snapshot.forEach((child) => {
+                  const reqId = child.key;
+                  const reqData = child.val();
+
+                  get(ref(database, `usersID/${reqData.sellerId}/profile/email`)).then(sellerSnapshot => {
+                      const sellerEmail = sellerSnapshot.val() || 'N/A';
+                      const date = new Date(reqData.timestamp).toLocaleString("th-TH");
+
+                      // --- ส่วนที่แก้ไขใหม่ ---
+                      // สร้างฟังก์ชันสำหรับสร้างแถวตาราง เพื่อไม่ให้โค้ดซ้ำซ้อน
+                      const createRow = (slipContent) => {
+                          return `
+                              <tr>
+                                  <td>${reqData.buyerEmail}</td>
+                                  <td>${sellerEmail}</td>
+                                  <td>${reqData.deeCoinAmount.toFixed(4)}</td>
+                                  <td>${reqData.thbAmount.toFixed(2)}</td>
+                                  <td>${slipContent}</td>
+                                  <td>${date}</td>
+                                  <td>
+                                      <button class="action-btn approve-btn" 
+                                          data-req-id="${reqId}" 
+                                          data-item-id="${reqData.itemId}"
+                                          data-buyer-id="${reqData.buyerId}"
+                                          data-seller-id="${reqData.sellerId}"
+                                          data-dee-coin="${reqData.deeCoinAmount}"
+                                          data-thb="${reqData.thbAmount}">อนุมัติ</button>
+                                      <button class="action-btn reject-btn" data-req-id="${reqId}">ปฏิเสธ</button>
+                                  </td>
+                              </tr>`;
+                      };
+
+                      // ตรวจสอบว่า slipPath เป็นลิงก์ไฟล์ หรือเป็นข้อความ
+                      if (reqData.slipPath === "Sent via Email") {
+                          // ถ้าเป็นข้อความ ให้แสดงข้อความนั้นเลย
+                          tableBody.innerHTML += createRow('<span>ส่งทางอีเมล</span>');
+                      } else {
+                          // ถ้าเป็นอย่างอื่น (โค้ดเดิม) ให้พยายามไปดึง URL ของไฟล์
+                          getDownloadURL(storageRef(storage, reqData.slipPath))
+                              .then(slipUrl => {
+                                  const slipLink = `<a href="${slipUrl}" target="_blank" rel="noopener noreferrer">ดูสลิป</a>`;
+                                  tableBody.innerHTML += createRow(slipLink);
+                              })
+                              .catch(err => {
+                                  console.error("Error getting slip URL:", err);
+                                  // หากเกิด Error ให้แสดงว่าหาไฟล์ไม่เจอ แทนที่จะไม่แสดงแถวนั้นเลย
+                                  tableBody.innerHTML += createRow('<span>หาไฟล์ไม่เจอ</span>');
+                              });
+                      }
+                      // --- จบส่วนที่แก้ไข ---
+                  });
+              });
+          });
+      }
+
+      document.getElementById("purchaseRequestsTableBody").addEventListener("click", async (e) => {
+          const target = e.target;
+          const reqId = target.dataset.reqId;
+          if (!reqId) return;
+
+          const requestRef = ref(database, `marketPurchaseRequests/${reqId}`);
+          
+          if (target.classList.contains("approve-btn")) {
+              target.disabled = true;
+              target.innerText = "กำลังอนุมัติ...";
+
+              const { itemId, buyerId, sellerId, deeCoin, thb } = target.dataset;
+              const deeCoinAmount = parseFloat(deeCoin);
+              const thbAmount = parseFloat(thb);
+              
+              const buyerRef = ref(database, `usersID/${buyerId}/profile`);
+              const sellerRef = ref(database, `usersID/${sellerId}/profile`);
+              const itemRef = ref(database, `marketItems/${itemId}`);
+
+              try {
+                  await runTransaction(buyerRef, (profile) => {
+                      if (profile) {
+                          profile.DeeCoin = (profile.DeeCoin || 0) + deeCoinAmount;
+                      }
+                      return profile;
+                  });
+
+                  await runTransaction(sellerRef, (profile) => {
+                      if (profile) {
+                          profile.THBwallet = (profile.THBwallet || 0) + thbAmount;
+                      }
+                      return profile;
+                  });
+
+                  await update(requestRef, { status: "approved" });
+                  await remove(itemRef);
+
+                  alert("อนุมัติการซื้อขายสำเร็จ!");
+
+              } catch (error) {
+                  console.error("Approval failed:", error);
+                  alert("เกิดข้อผิดพลาดในการอนุมัติ: " + error.message);
+                  target.disabled = false;
+                  target.innerText = "อนุมัติ";
+              }
+
+          } else if (target.classList.contains("reject-btn")) {
+              target.disabled = true;
+              await update(requestRef, { status: "rejected" });
+              alert("ปฏิเสธรายการเรียบร้อยแล้ว");
+          }
+      });
+      
+      // Functions for Withdrawal (No Changes)
+      function loadWithdrawalRequests() {
+        const requestsRef = query(
+          ref(database, "withdrawalRequests"),
+          orderByChild("status"),
+          equalTo("pending")
+        );
+        const tableBody = document.getElementById("withdrawalsTableBody");
+        onValue(requestsRef, (snapshot) => {
+          tableBody.innerHTML = "";
+          if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+              const reqId = childSnapshot.key;
+              const reqData = childSnapshot.val();
+              const bank = reqData.bankInfo;
+              const bankDetails = `<b>ชื่อบัญชี:</b> ${bank.accountNameTh} (${bank.accountNameEn})<br><b>เลขบัญชี:</b> ${bank.accountNumber}<br><b>ธนาคาร:</b> ${bank.bankName} (${bank.branch})`;
+              const date = new Date(reqData.timestamp).toLocaleString("th-TH");
+              tableBody.innerHTML += `
+                            <tr id="withdraw-row-${reqId}">
+                                <td>${reqData.userEmail}</td>
+                                <td>${reqData.amount.toFixed(2)}</td>
+                                <td>${bankDetails}</td>
+                                <td>${date}</td>
+                                <td>
+                                    <button class="action-btn approve-btn" data-req-id="${reqId}" data-user-id="${
+                reqData.userId
+              }" data-amount="${reqData.amount}">อนุมัติ</button>
+                                    <button class="action-btn reject-btn" data-req-id="${reqId}">ปฏิเสธ</button>
+                                </td>
+                            </tr>`;
+            });
+          } else {
+            tableBody.innerHTML =
+              '<tr><td colspan="5" style="text-align: center;">ไม่มีรายการขอถอนเงินที่รออนุมัติ</td></tr>';
+          }
+        });
+      }
+      document
+        .getElementById("withdrawalsTableBody")
+        .addEventListener("click", async (e) => {
+          const target = e.target;
+          const reqId = target.dataset.reqId;
+          if (!reqId) return;
+          const requestRef = ref(database, `withdrawalRequests/${reqId}`);
+          if (target.classList.contains("approve-btn")) {
+            const userId = target.dataset.userId;
+            const amount = parseFloat(target.dataset.amount);
+            const userProfileRef = ref(database, `usersID/${userId}/profile`);
+            const userSnapshot = await get(userProfileRef);
+            const currentBalance = userSnapshot.val().THBwallet || 0;
+            if (currentBalance < amount) {
+              alert(
+                "เกิดข้อผิดพลาด: ยอดเงินของผู้ใช้ไม่เพียงพอสำหรับการถอนนี้!"
+              );
+              await remove(requestRef);
+              return;
+            }
+            const newBalance = currentBalance - amount;
+            await update(userProfileRef, { THBwallet: newBalance });
+            await remove(requestRef);
+            alert("อนุมัติการถอนเงินและหักยอดเงินเรียบร้อยแล้ว");
+          } else if (target.classList.contains("reject-btn")) {
+            await remove(requestRef);
+            alert("ปฏิเสธการถอนเงินเรียบร้อยแล้ว");
+          }
+        });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        signOut(auth).then(() => {
+          window.location.href = "./login.html";
+        });
+      });
+    </script>
+  </body>
+</html>

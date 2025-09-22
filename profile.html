@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ATOM INDUSTRY - โปรไฟล์</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* --- CSS เพิ่มเติมสำหรับการแก้ไขโปรไฟล์ --- */
+      .profile-value input,
+      .profile-value select {
+        width: 100%;
+        padding: 8px;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+      .profile-actions {
+        text-align: right;
+        margin-top: 20px;
+      }
+      .btn-edit,
+      .btn-save,
+      .btn-cancel {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s;
+      }
+      .btn-edit {
+        background-color: #315ba7;
+        color: white;
+      }
+      .btn-edit:hover {
+        background-color: #284a8a;
+      }
+      .btn-save {
+        background-color: #28a745;
+        color: white;
+        margin-right: 10px;
+      }
+      .btn-save:hover {
+        background-color: #218838;
+      }
+      .btn-cancel {
+        background-color: #6c757d;
+        color: white;
+      }
+      .btn-cancel:hover {
+        background-color: #5a6268;
+      }
+
+      /* Class สำหรับซ่อน/แสดง element */
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="sidebar-logo">
+        <img
+          src="ChatGPT Image 21 มิ.ย. 2568 10_23_59.png"
+          alt="Atom Industry"
+          class="logo"
+        />
+        <img src="DeeCoin.png" alt="DEE" class="dee-logo" />
+      </div>
+      <div class="user-bar">
+        <span class="user-icon">👤</span>
+        <span class="realname" id="headerUserName">Loading...</span>
+        <button id="logoutBtn">ออกจากระบบ</button>
+        <option>ไทย</option>
+      </div>
+    </header>
+
+    <nav class="sidebar">
+      <a href="index.html">หน้าหลัก</a>
+      <a href="account.html">บัญชี</a>
+      <a href="All_id.html">- ภาพรวมบัญชี</a>
+      <a href="add-account.html">- เพิ่มบัญชี</a>
+      <a href="wallet.html">กระเป๋าเงิน</a>
+      <a href="account-list.html">- ตลาดซื้อขาย</a>
+      <a href="withdraw.html">- ถอนเงิน</a>
+      <a href="transaction-history.html">- ประวัติทำธุรกรรม</a>
+      <a href="mining-game.html">โปรแกรมเกมส์</a>
+      <a href="other-games.html">- เกมส์อื่นๆ</a>
+      <a href="profile.html">โปรไฟล์</a>
+      <a href="profile.html">- ข้อมูลผู้ใช้</a>
+      <a href="setting.html">- ตั้งค่า</a>
+      <a href="bank-card.html">- Bank card</a>
+      <a href="join.html">ร่วมงานกับเรา</a>
+    </nav>
+
+    <main class="main-content-profile">
+      <div class="page-title-profile">โปรไฟล์</div>
+      <div class="profile-card">
+        <div class="profile-row">
+          <div class="profile-col">
+            <div class="profile-label">ชื่อจริง</div>
+            <div class="profile-value">
+              <span id="profileNameView">Loading...</span>
+              <input type="text" id="profileNameInput" class="hidden" />
+            </div>
+          </div>
+          <div class="profile-col">
+            <div class="profile-label">เพศ</div>
+            <div class="profile-value">
+              <span id="profileGenderView">Loading...</span>
+              <select id="profileGenderInput" class="hidden">
+                <option value="">-- เลือกเพศ --</option>
+                <option value="male">ชาย</option>
+                <option value="female">หญิง</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-col">
+            <div class="profile-label">ชื่อเล่น</div>
+            <div class="profile-value">
+              <span id="profileNicknameView">Loading...</span>
+              <input type="text" id="profileNicknameInput" class="hidden" />
+            </div>
+          </div>
+          <div class="profile-col">
+            <div class="profile-label">เดือน/ปีเกิด</div>
+            <div class="profile-value">
+              <span id="profileBirthView">Loading...</span>
+              <div
+                id="profileBirthInputContainer"
+                class="hidden"
+                style="display: flex; gap: 10px"
+              >
+                <select id="regMonthInput"></select>
+                <select id="regYearInput"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-col">
+            <div class="profile-label">เบอร์โทร</div>
+            <div class="profile-value" id="profilePhone">Loading...</div>
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-col" style="flex: 2">
+            <div class="profile-label">ที่อยู่ (ธนาคาร)</div>
+            <div class="profile-value" id="bankAddress">Loading...</div>
+          </div>
+          <div class="profile-col" style="position: relative; right: 116px">
+            <div class="profile-label">หมายเลขบัญชีธนาคาร</div>
+            <div class="profile-value" id="bankAccountNumber">Loading...</div>
+          </div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-col">
+            <div class="profile-label">เลขกระเป๋าตังค์</div>
+            <div class="profile-value" id="profileKeyBag">Loading...</div>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button id="editBtn" class="btn-edit">แก้ไขข้อมูล</button>
+          <button id="saveBtn" class="btn-save hidden">บันทึก</button>
+          <button id="cancelBtn" class="btn-cancel hidden">ยกเลิก</button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer-set">
+      <div class="android-row">
+        <span>android</span>
+        <img
+          src="android-icon-logo-png_seeklogo-306470.png"
+          class="android-icon"
+          alt="android"
+        />
+        <img src="frame.png" class="qr-icon" alt="qr code" />
+      </div>
+
+      <div class="flag-row">
+        <div class="lang-row">
+          <img
+            src="istockphoto-1032082612-612x612.jpg"
+            alt="Thai Flag"
+            class="flag"
+          />
+          <span class="lang-text">ไทย</span>
+        </div>
+      </div>
+
+      <div class="side-social">
+        <a href="https://www.facebook.com/profile.php?id=61579275875237"
+          ><img src="Facbook.jpg" alt="Facebook"
+        /></a>
+        <a href="https://lin.ee/RJo5SD2"><img src="Line.jpg" alt="Line" /></a>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        update,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCmrCEiO2kVl5j3VlwPycOYABoEiA0Kkts",
+        authDomain: "kudthong-f67a2.firebaseapp.com",
+        databaseURL:
+          "https://kudthong-f67a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "kudthong-f67a2",
+        storageBucket: "kudthong-f67a2.appspot.com",
+        messagingSenderId: "140418020508",
+        appId: "1:140418020508:web:1d2feb2b7b1bd9ea0ee959",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+
+      // --- สร้างตัวเลือกเดือนและปีเกิด ---
+      const yearSelect = document.getElementById("regYearInput");
+      const monthSelect = document.getElementById("regMonthInput");
+
+      // สร้างตัวเลือกปี
+      yearSelect.innerHTML = `<option value="">-- ปี --</option>`;
+      for (let i = new Date().getFullYear() - 10; i >= 1950; i--) {
+        yearSelect.innerHTML += `<option value="${i}">${i}</option>`;
+      }
+
+      // สร้างตัวเลือกเดือน
+      const months = [
+        "มกราคม",
+        "กุมภาพันธ์",
+        "มีนาคม",
+        "เมษายน",
+        "พฤษภาคม",
+        "มิถุนายน",
+        "กรกฎาคม",
+        "สิงหาคม",
+        "กันยายน",
+        "ตุลาคม",
+        "พฤศจิกายน",
+        "ธันวาคม",
+      ];
+      monthSelect.innerHTML = `<option value="">-- เดือน --</option>`;
+      months.forEach((month, index) => {
+        monthSelect.innerHTML += `<option value="${
+          index + 1
+        }">${month}</option>`;
+      });
+
+      let currentUserUid = null;
+      let currentUserProfileRef = null;
+
+      // --- ตรวจสอบการล็อกอินและดึงข้อมูล ---
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          currentUserUid = user.uid;
+          currentUserProfileRef = ref(
+            database,
+            "usersID/" + currentUserUid + "/profile"
+          );
+          const bankCardRef = ref(
+            database,
+            "usersID/" + currentUserUid + "/bankCardInfo"
+          );
+
+          onValue(currentUserProfileRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              const birthDate =
+                data.birthYear && data.birthMonth
+                  ? `${months[data.birthMonth - 1]} ${data.birthYear}`
+                  : "ไม่มีข้อมูล";
+
+              document.getElementById("headerUserName").innerText =
+                data.realName || data.nickname || user.email;
+
+              // แสดงข้อมูล (View Mode)
+              document.getElementById("profileNameView").innerText =
+                data.realName || "ไม่มีข้อมูล";
+              document.getElementById("profileGenderView").innerText =
+                data.gender === "male"
+                  ? "ชาย"
+                  : data.gender === "female"
+                  ? "หญิง"
+                  : "ไม่มีข้อมูล";
+              document.getElementById("profileNicknameView").innerText =
+                data.nickname || "ไม่มีข้อมูล";
+              document.getElementById("profileBirthView").innerText = birthDate;
+              document.getElementById("profileKeyBag").innerText =
+                data.KeyBag || "ไม่มีข้อมูล";
+
+              // ตั้งค่าเริ่มต้นให้ Input Fields (Edit Mode)
+              document.getElementById("profileNameInput").value =
+                data.realName || "";
+              document.getElementById("profileNicknameInput").value =
+                data.nickname || "";
+              document.getElementById("profileGenderInput").value =
+                data.gender || "";
+              document.getElementById("regMonthInput").value =
+                data.birthMonth || "";
+              document.getElementById("regYearInput").value =
+                data.birthYear || "";
+            }
+          });
+
+          onValue(bankCardRef, (snapshot) => {
+            // ... โค้ดดึงข้อมูลธนาคารของคุณ (ไม่มีการเปลี่ยนแปลง)
+            const data = snapshot.val();
+            if (data) {
+              document.getElementById("bankAddress").innerText =
+                data.branchAddress || "ไม่มีข้อมูล";
+              document.getElementById("bankAccountNumber").innerText =
+                data.accountNumber || "ไม่มีข้อมูล";
+              document.getElementById("profilePhone").innerText =
+                data.accountPhone || "ไม่มีข้อมูล";
+            } else {
+              document.getElementById("bankAddress").innerText =
+                "ยังไม่มีข้อมูลบัตรธนาคาร";
+              document.getElementById("bankAccountNumber").innerText =
+                "ยังไม่มีข้อมูลบัตรธนาคาร";
+              document.getElementById("profilePhone").innerText = "ไม่มีข้อมูล";
+            }
+          });
+        } else {
+          window.location.href = "./login.html";
+        }
+      });
+
+      // --- Logic การสลับโหมด View/Edit ---
+      const viewElements = document.querySelectorAll('span[id$="View"]');
+      const inputElements = document.querySelectorAll(
+        'input[id$="Input"], select[id$="Input"], div[id$="InputContainer"]'
+      );
+      const editBtn = document.getElementById("editBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+
+      function toggleEditMode(isEditing) {
+        viewElements.forEach((el) => el.classList.toggle("hidden", isEditing));
+        inputElements.forEach((el) =>
+          el.classList.toggle("hidden", !isEditing)
+        );
+
+        editBtn.classList.toggle("hidden", isEditing);
+        saveBtn.classList.toggle("hidden", !isEditing);
+        cancelBtn.classList.toggle("hidden", !isEditing);
+      }
+
+      editBtn.addEventListener("click", () => toggleEditMode(true));
+      cancelBtn.addEventListener("click", () => toggleEditMode(false));
+
+      // --- Logic การบันทึกข้อมูล ---
+      saveBtn.addEventListener("click", async () => {
+        if (!currentUserProfileRef) return;
+
+        const updates = {
+          realName: document.getElementById("profileNameInput").value,
+          nickname: document.getElementById("profileNicknameInput").value,
+          gender: document.getElementById("profileGenderInput").value,
+          birthMonth: document.getElementById("regMonthInput").value,
+          birthYear: document.getElementById("regYearInput").value,
+        };
+
+        try {
+          await update(currentUserProfileRef, updates);
+          alert("บันทึกข้อมูลสำเร็จ!");
+          toggleEditMode(false);
+        } catch (error) {
+          alert("เกิดข้อผิดพลาดในการบันทึก: " + error.message);
+        }
+      });
+
+      // --- ฟังก์ชันออกจากระบบ ---
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        signOut(auth).then(() => {
+          window.location.href = "./login.html";
+        });
+      });
+    </script>
+  </body>
+</html>

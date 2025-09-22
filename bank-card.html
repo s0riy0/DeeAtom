@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ATOM INDUSTRY - Bank Card</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .bank-card-input {
+        width: 95%;
+        padding: 5px;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .add-card-btn {
+        background-color: #27ae60;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        margin-bottom: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="sidebar-logo">
+        <img
+          src="ChatGPT Image 21 มิ.ย. 2568 10_23_59.png"
+          alt="Atom Industry"
+          class="logo"
+        />
+        <img src="DeeCoin.png" alt="DEE" class="dee-logo" />
+      </div>
+      <div class="user-bar">
+        <span class="user-icon">👤</span>
+        <span class="realname" id="name">Loading...</span>
+        <button id="logoutBtn">ออกจากระบบ</button>
+        <option>ไทย</option>
+      </div>
+    </header>
+
+    <nav class="sidebar">
+      <a href="index.html">หน้าหลัก</a>
+      <a href="account.html">บัญชี</a>
+      <a href="All_id.html">- ภาพรวมบัญชี</a>
+      <a href="add-account.html">- เพิ่มบัญชี</a>
+      <a href="wallet.html">กระเป๋าเงิน</a>
+      <a href="account-list.html">- ตลาดซื้อขาย</a>
+      <a href="withdraw.html">- ถอนเงิน</a>
+      <a href="transaction-history.html">- ประวัติทำธุรกรรม</a>
+      <a href="mining-game.html">โปรแกรมเกมส์</a>
+      <a href="other-games.html">- เกมส์อื่นๆ</a>
+      <a href="profile.html">โปรไฟล์</a>
+      <a href="profile.html">- ข้อมูลผู้ใช้</a>
+      <a href="setting.html">- ตั้งค่า</a>
+      <a href="bank-card.html">- Bank card</a>
+      <a href="join.html">ร่วมงานกับเรา</a>
+    </nav>
+
+    <main class="main-bank">
+      <div class="page-title-bc">Bank Card</div>
+      <div class="bank-card-container">
+        <!-- ปุ่มเพิ่มรายการที่ขาดไป -->
+        <button class="add-card-btn" id="addBtn">+ เพิ่มรายการ</button>
+
+        <div class="bank-card-box">
+          <div class="bank-card-header">
+            <span>ข้อมูลบัญชีธนาคาร</span>
+            <span class="bank-card-bank" id="cardBankNameHeader"></span>
+          </div>
+          <div class="bank-card-detail">
+            <div class="bank-card-label">ชื่อเจ้าของบัญชี (ภาษาอังกฤษ)</div>
+            <div class="bank-card-value" id="cardAccountNameEN">Loading...</div>
+            <div class="bank-card-label">ชื่อ-นามสกุล (ภาษาไทย)</div>
+            <div class="bank-card-value" id="cardAccountNameTH">Loading...</div>
+            <div class="bank-card-label">เลขบัญชีธนาคาร</div>
+            <div class="bank-card-value" id="cardAccountNumber">Loading...</div>
+            <div class="bank-card-label">ธนาคาร</div>
+            <div class="bank-card-value" id="cardBankName">Loading...</div>
+            <div class="bank-card-label">สาขา</div>
+            <div class="bank-card-value" id="cardBranch">Loading...</div>
+            <div class="bank-card-label">ที่อยู่สาขา</div>
+            <div class="bank-card-value" id="cardBranchAddress">Loading...</div>
+            <div class="bank-card-label">ประเภทบัญชี</div>
+            <div class="bank-card-value" id="cardAccountType">Loading...</div>
+            <div class="bank-card-label">หมายเลขโทรศัพท์</div>
+            <div class="bank-card-value" id="cardAccountPhone">Loading...</div>
+          </div>
+          <div class="bank-card-actions">
+            <button class="edit-btn" id="editBtn" title="Edit">✏️</button>
+            <!-- ปุ่มลบที่ขาดไป -->
+            <button class="delete-btn" id="deleteBtn" title="Delete">🗑️</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer-bank">
+      <div class="android-row">
+        <span>android</span>
+        <img
+          src="android-icon-logo-png_seeklogo-306470.png"
+          class="android-icon"
+          alt="android"
+        />
+        <img src="frame.png" class="qr-icon" alt="qr code" />
+      </div>
+
+      <div class="flag-row">
+        <div class="lang-row">
+          <img
+            src="istockphoto-1032082612-612x612.jpg"
+            alt="Thai Flag"
+            class="flag"
+          />
+          <span class="lang-text">ไทย</span>
+        </div>
+      </div>
+
+      <div class="side-social">
+        <a href="https://www.facebook.com/profile.php?id=61579275875237"
+          ><img src="Facbook.jpg" alt="Facebook"
+        /></a>
+        <a href="https://lin.ee/RJo5SD2"><img src="Line.jpg" alt="Line" /></a>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        update,
+        set,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCmrCEiO2kVl5j3VlwPycOYABoEiA0Kkts",
+        authDomain: "kudthong-f67a2.firebaseapp.com",
+        databaseURL:
+          "https://kudthong-f67a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "kudthong-f67a2",
+        storageBucket: "kudthong-f67a2.appspot.com",
+        messagingSenderId: "140418020508",
+        appId: "1:140418020508:web:1d2feb2b7b1bd9ea0ee959",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+
+      let currentUser = null;
+      let isEditMode = false;
+      let bankCardRef = null;
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          currentUser = user;
+          bankCardRef = ref(database, "usersID/" + user.uid + "/bankCardInfo");
+          const userProfileRef = ref(
+            database,
+            "usersID/" + user.uid + "/profile"
+          );
+
+          onValue(userProfileRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              document.getElementById("name").innerText =
+                data.realName || data.nickname || user.email;
+            }
+          });
+
+          onValue(bankCardRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+              const initialData = {
+                accountNameEn: "",
+                accountNameTh: "",
+                accountNumber: "",
+                bankName: "",
+                branch: "",
+                branchAddress: "",
+                accountType: "",
+                accountPhone: "",
+              };
+              set(bankCardRef, initialData);
+            } else if (!isEditMode) {
+              displayCardData(data);
+            }
+          });
+        } else {
+          window.location.href = "./login.html";
+        }
+      });
+
+      function displayCardData(data) {
+        const fieldMapping = {
+          cardAccountNameEN: "accountNameEn",
+          cardAccountNameTH: "accountNameTh",
+          cardAccountNumber: "accountNumber",
+          cardBankName: "bankName",
+          cardBranch: "branch",
+          cardBranchAddress: "branchAddress",
+          cardAccountType: "accountType",
+          cardAccountPhone: "accountPhone",
+          cardBankNameHeader: "bankName",
+        };
+
+        for (const id in fieldMapping) {
+          const element = document.getElementById(id);
+          if (element) {
+            element.innerText = data[fieldMapping[id]] || "N/A";
+          }
+        }
+      }
+
+      const editBtn = document.getElementById("editBtn");
+      editBtn.addEventListener("click", () => {
+        if (!isEditMode) {
+          isEditMode = true;
+          editBtn.innerHTML = "💾"; // Save icon
+          toggleInputFields(true);
+        } else {
+          saveCardData();
+        }
+      });
+
+      function toggleInputFields(isEditing) {
+        const fieldIds = [
+          "cardAccountNameEN",
+          "cardAccountNameTH",
+          "cardAccountNumber",
+          "cardBankName",
+          "cardBranch",
+          "cardBranchAddress",
+          "cardAccountType",
+          "cardAccountPhone",
+        ];
+        fieldIds.forEach((id) => {
+          const element = document.getElementById(id);
+          if (isEditing && element) {
+            const currentValue =
+              element.innerText === "N/A" ? "" : element.innerText;
+            element.innerHTML = `<input type="text" id="${id}-input" class="bank-card-input" value="${currentValue}">`;
+          }
+        });
+      }
+
+      async function saveCardData() {
+        if (!bankCardRef) return;
+
+        const newData = {
+          accountNameEn: document.getElementById("cardAccountNameEN-input")
+            .value,
+          accountNameTh: document.getElementById("cardAccountNameTH-input")
+            .value,
+          accountNumber: document.getElementById("cardAccountNumber-input")
+            .value,
+          bankName: document.getElementById("cardBankName-input").value,
+          branch: document.getElementById("cardBranch-input").value,
+          branchAddress: document.getElementById("cardBranchAddress-input")
+            .value,
+          accountType: document.getElementById("cardAccountType-input").value,
+          accountPhone: document.getElementById("cardAccountPhone-input").value,
+        };
+
+        try {
+          await update(bankCardRef, newData);
+          alert("บันทึกข้อมูลสำเร็จ!");
+          isEditMode = false;
+          editBtn.innerHTML = "✏️"; // Edit icon
+          // onValue will automatically refresh the display
+        } catch (error) {
+          console.error("Error updating data:", error);
+          alert("เกิดข้อผิดพลาดในการบันทึก");
+        }
+      }
+
+      // *** เพิ่ม Event Listener สำหรับปุ่มลบ ***
+      const deleteBtn = document.getElementById("deleteBtn");
+      deleteBtn.addEventListener("click", async () => {
+        if (confirm("คุณต้องการลบข้อมูลบัญชีธนาคารทั้งหมดใช่หรือไม่?")) {
+          try {
+            const emptyData = {
+              accountNameEn: "",
+              accountNameTh: "",
+              accountNumber: "",
+              bankName: "",
+              branch: "",
+              branchAddress: "",
+              accountType: "",
+              accountPhone: "",
+            };
+            await set(bankCardRef, emptyData);
+            alert("ลบข้อมูลสำเร็จ");
+          } catch (error) {
+            console.error("Error deleting data:", error);
+            alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+          }
+        }
+      });
+
+      // *** เพิ่ม Event Listener สำหรับปุ่มเพิ่มรายการ (จะทำงานเหมือนปุ่มแก้ไข) ***
+      const addBtn = document.getElementById("addBtn");
+      addBtn.addEventListener("click", () => {
+        if (!isEditMode) {
+          editBtn.click(); // จำลองการคลิกปุ่มแก้ไข
+        }
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        signOut(auth).then(() => {
+          window.location.href = "./login.html";
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ATOM INDUSTRY - ตลาดซื้อขาย</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .post-form {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border: 1px solid #e0e0e0;
+      }
+      .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+      .form-row input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .post-btn {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+      }
+      .my-post-status {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+      }
+      .status-tag {
+        padding: 3px 8px;
+        border-radius: 12px;
+        color: #fff;
+        font-size: 0.8em;
+      }
+      .status-pending {
+        background-color: #ffc107;
+      }
+      .status-approved {
+        background-color: #28a745;
+      }
+      .status-rejected {
+        background-color: #dc3545;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 25px;
+        border: 1px solid #888;
+        width: 90%;
+        max-width: 450px;
+        border-radius: 8px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0;
+      }
+      .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .close-btn:hover,
+      .close-btn:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .modal-content label {
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      .modal-content input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      #qr-code-container {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      #qr-code-container img {
+        max-width: 200px;
+        border: 1px solid #ddd;
+        padding: 5px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="sidebar-logo">
+        <img src="ChatGPT Image 21 มิ.ย. 2568 10_23_59.png" class="logo" /><img
+          src="DeeCoin.png"
+          class="dee-logo"
+        />
+      </div>
+      <div class="user-bar">
+        <span class="user-icon">👤</span>
+        <span class="realname" id="name">Loading...</span
+        ><button id="logoutBtn">ออกจากระบบ</button>
+        <option>ไทย</option>
+      </div>
+    </header>
+    <nav class="sidebar">
+      <a href="index.html">หน้าหลัก</a><a href="account.html">บัญชี</a
+      ><a href="All_id.html">- ภาพรวมบัญชี</a
+      ><a href="add-account.html">- เพิ่มบัญชี</a
+      ><a href="wallet.html">กระเป๋าเงิน</a
+      ><a href="account-list.html">- ตลาดซื้อขาย</a
+      ><a href="withdraw.html">- ถอนเงิน</a
+      ><a href="transaction-history.html">- ประวัติทำธุรกรรม</a
+      ><a href="mining-game.html">โปรแกรมเกมส์</a
+      ><a href="other-games.html">- เกมส์อื่นๆ</a
+      ><a href="profile.html">โปรไฟล์</a
+      ><a href="profile.html">- ข้อมูลผู้ใช้</a
+      ><a href="setting.html">- ตั้งค่า</a
+      ><a href="bank-card.html">- Bank card</a
+      ><a href="join.html">ร่วมงานกับเรา</a>
+    </nav>
+
+    <main class="main-list">
+      <div class="post-form">
+        <h3>โพสต์ขายเหรียญ DeeCoin</h3>
+        <form id="sellPostForm">
+          <div class="form-row">
+            <input
+              type="number"
+              id="deeCoinAmount"
+              placeholder="จำนวน DeeCoin"
+              step="any"
+              required
+            /><input
+              type="number"
+              id="thbAmount"
+              placeholder="ราคา THB"
+              step="any"
+              required
+            />
+          </div>
+          <button type="submit" class="post-btn" id="postSubmitBtn">
+            ส่งโพสต์เพื่อรอการอนุมัติ
+          </button>
+        </form>
+        <div
+          class="my-post-status"
+          id="myPostStatusContainer"
+          style="display: none"
+        ></div>
+      </div>
+
+      <div class="page-title" style="font-size: 1.3em">ตลาดซื้อขาย</div>
+      <div class="score-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ผู้ขาย</th>
+              <th>DEE</th>
+              <th>THB</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="marketTableBody"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <div id="buyModal" class="modal">
+      <div class="modal-content">
+        <span id="closeBuyModal" class="close-btn">&times;</span>
+        <h3>ยืนยันการซื้อ</h3>
+
+        <div id="qr-code-container">
+          <p><strong>สแกน QR Code เพื่อชำระเงิน</strong></p>
+          <img src="payment.jpg" alt="QR Code for Payment" />
+        </div>
+
+        <form id="buyForm">
+          <label>จำนวนเงินที่ต้องชำระ (บาท)</label>
+          <input
+            type="number"
+            id="amount-display"
+            disabled
+            style="background-color: #eee; font-weight: bold"
+          />
+          <label for="keybag-input">เลขกระเป๋าตังค์ของคุณ</label>
+          <input
+            type="text"
+            id="keybag-input"
+            placeholder="กรอกเลขกระเป๋าตังค์เพื่อยืนยัน"
+            required
+          />
+          <label for="slipUpload">แนบสลิบการโอนเงิน</label>
+          <input type="file" id="slipUpload" accept="image/*" required />
+          <button
+            type="submit"
+            id="confirmBuyBtn"
+            class="post-btn"
+            style="margin-top: 20px"
+          >
+            ส่งคำสั่งซื้อ
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <footer class="footer-account">
+      <div class="android-row">
+        <span>android</span>
+        <img
+          src="android-icon-logo-png_seeklogo-306470.png"
+          class="android-icon"
+          alt="android"
+        />
+        <img src="frame.png" class="qr-icon" alt="qr code" />
+      </div>
+
+      <div class="flag-row">
+        <div class="lang-row">
+          <img
+            src="istockphoto-1032082612-612x612.jpg"
+            alt="Thai Flag"
+            class="flag"
+          />
+          <span class="lang-text">ไทย</span>
+        </div>
+      </div>
+
+      <div class="side-social">
+        <a href="https://www.facebook.com/profile.php?id=61579275875237"
+          ><img src="Facbook.jpg" alt="Facebook"
+        /></a>
+        <a href="https://lin.ee/RJo5SD2"><img src="Line.jpg" alt="Line" /></a>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+      import {
+        getDatabase,
+        ref,
+        onValue,
+        get,
+        push,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+      import {
+        getFunctions,
+        httpsCallable,
+      } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-functions.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCmrCEiO2kVl5j3VlwPycOYABoEiA0Kkts",
+        authDomain: "kudthong-f67a2.firebaseapp.com",
+        databaseURL:
+          "https://kudthong-f67a2-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "kudthong-f67a2",
+        storageBucket: "kudthong-f67a2.appspot.com",
+        messagingSenderId: "140418020508",
+        appId: "1:140418020508:web:1d2feb2b7b1bd9ea0ee959",
+      };
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const database = getDatabase(app);
+      const functions = getFunctions(app, "asia-southeast1");
+      let currentUser = null;
+      let currentItemToBuy = null;
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          currentUser = user;
+          const userProfileRef = ref(
+            database,
+            "usersID/" + user.uid + "/profile"
+          );
+          onValue(userProfileRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              document.getElementById("name").innerText =
+                data.realName || data.nickname || user.email;
+            }
+          });
+          loadMarketItems();
+          checkMyPostStatus(user.uid);
+        } else {
+          window.location.href = "./login.html";
+        }
+      });
+
+      document
+        .getElementById("sellPostForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const deeCoin = parseFloat(
+            document.getElementById("deeCoinAmount").value
+          );
+          const thb = parseFloat(document.getElementById("thbAmount").value);
+          const userProfileRef = ref(
+            database,
+            `usersID/${currentUser.uid}/profile`
+          );
+          const snapshot = await get(userProfileRef);
+          const currentDeeCoin = snapshot.val().DeeCoin || 0;
+          if (deeCoin > currentDeeCoin) {
+            alert("คุณมี DeeCoin ไม่เพียงพอที่จะโพสต์ขาย");
+            return;
+          }
+          const postData = {
+            userId: currentUser.uid,
+            userEmail: currentUser.email,
+            deeCoinAmount: deeCoin,
+            thbAmount: thb,
+            status: "pending",
+            timestamp: serverTimestamp(),
+          };
+          const postRequestsRef = ref(database, "sellPostRequests");
+          await push(postRequestsRef, postData);
+          alert("ส่งโพสต์ของคุณเพื่อให้แอดมินตรวจสอบแล้ว");
+          document.getElementById("sellPostForm").reset();
+        });
+      
+      // --- 🟢 โค้ดส่วนที่แก้ไข ---
+      function loadMarketItems() {
+        const marketRef = ref(database, "marketItems");
+        const tableBody = document.getElementById("marketTableBody");
+        onValue(marketRef, (snapshot) => {
+          tableBody.innerHTML = "";
+          if (snapshot.exists()) {
+            snapshot.forEach((child) => {
+              const itemId = child.key;
+              const item = child.val();
+              const row = document.createElement("tr");
+              
+              let actionCellHtml = '';
+
+              // ตรวจสอบว่าเป็นโพสต์ของตัวเองหรือไม่
+              if (item.userId === currentUser.uid) {
+                // ถ้าใช่ ให้แสดงปุ่มที่กดไม่ได้
+                actionCellHtml = `<td><button disabled style="padding:5px 10px; cursor:not-allowed; background-color:#ccc;">โพสต์ของคุณ</button></td>`;
+              } else {
+                // ถ้าไม่ใช่ ให้แสดงปุ่ม "ซื้อ"
+                actionCellHtml = `<td><button class="buy-btn" data-item-id="${itemId}" style="padding:5px 10px; cursor:pointer;">ซื้อ</button></td>`;
+              }
+              
+              row.innerHTML = `<td>${item.userEmail.split("@")[0]}...</td>
+                             <td>${item.deeCoinAmount.toFixed(4)}</td>
+                             <td>${item.thbAmount.toFixed(2)}</td>
+                             ${actionCellHtml}`; // นำ action cell ที่สร้างตามเงื่อนไขมาใส่
+
+              tableBody.appendChild(row);
+            });
+          } else {
+            tableBody.innerHTML =
+              '<tr><td colspan="4" style="text-align:center;">ยังไม่มีรายการขายในตลาด</td></tr>';
+          }
+        });
+      }
+      // --- 🟢 จบส่วนที่แก้ไข ---
+
+      function checkMyPostStatus(userId) {
+        /* โค้ดส่วนนี้เหมือนเดิม */
+      }
+
+      const modal = document.getElementById("buyModal");
+      document.getElementById("closeBuyModal").onclick = () => {
+        modal.style.display = "none";
+      };
+      window.onclick = (event) => {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      document
+        .getElementById("marketTableBody")
+        .addEventListener("click", async (e) => {
+          if (e.target.classList.contains("buy-btn")) {
+            const itemId = e.target.dataset.itemId;
+            const itemRef = ref(database, `marketItems/${itemId}`);
+            const snapshot = await get(itemRef);
+            if (snapshot.exists()) {
+              currentItemToBuy = { id: itemId, ...snapshot.val() };
+              document.getElementById("amount-display").value =
+                currentItemToBuy.thbAmount.toFixed(2);
+              modal.style.display = "block";
+            } else {
+              alert("รายการนี้ไม่มีอยู่แล้วในตลาด");
+            }
+          }
+        });
+
+      document
+        .getElementById("buyForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          if (!currentItemToBuy) return;
+
+          const keybagInput = document.getElementById("keybag-input").value;
+          const slipFile = document.getElementById("slipUpload").files[0];
+
+          if (!slipFile) {
+            alert("กรุณาแนบสลิบการโอนเงินก่อนส่งคำสั่งซื้อ");
+            return;
+          }
+
+          const buyerProfileRef = ref(database, `usersID/${currentUser.uid}/profile`);
+          const snapshot = await get(buyerProfileRef);
+          if (snapshot.val().KeyBag !== keybagInput) {
+            alert("เลขกระเป๋าตังค์ไม่ถูกต้อง!");
+            return;
+          }
+
+          const confirmBtn = document.getElementById("confirmBuyBtn");
+          confirmBtn.disabled = true;
+          confirmBtn.innerText = "กำลังส่ง...";
+
+          try {
+            const getBase64 = (file) => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+            });
+
+            const slipBase64 = await getBase64(slipFile);
+
+            const purchaseData = {
+              itemId: currentItemToBuy.id,
+              sellerId: currentItemToBuy.userId,
+              buyerId: currentUser.uid,
+              buyerEmail: currentUser.email,
+              thbAmount: currentItemToBuy.thbAmount,
+              deeCoinAmount: currentItemToBuy.deeCoinAmount,
+            };
+
+            const sendRequest = httpsCallable(functions, "sendPurchaseRequestWithSlip");
+            const result = await sendRequest({
+              purchaseData: purchaseData,
+              slipBase64: slipBase64,
+              slipFileType: slipFile.type
+            });
+            
+            alert(result.data.message);
+            
+            modal.style.display = "none";
+            e.target.reset();
+
+          } catch (error) {
+            console.error("Purchase Error:", error);
+            alert("เกิดข้อผิดพลาด: " + error.message);
+          } finally {
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = "ส่งคำสั่งซื้อ";
+          }
+        });
+
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", () =>
+          signOut(auth).then(() => (window.location.href = "./login.html"))
+        );
+    </script>
+  </body>
+</html>
